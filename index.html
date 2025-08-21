@@ -3,16 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gorilla Tag VR | The Ultimate Primate Virtual Reality Experience</title>
+    <title>imcrab - YouTube Channel</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --primary: #ff6b35;
-            --secondary: #2de2e6;
-            --dark: #121212;
-            --darker: #0a0a0a;
-            --light: #f4f4f4;
-            --accent: #ff3864;
+            --crab-red: #ff4d4d;
+            --crab-dark: #121212;
+            --crab-light: #1f1f1f;
+            --crab-text: #f5f5f5;
+            --crab-accent: #4dc9ff;
         }
 
         * {
@@ -23,412 +22,395 @@
         }
 
         body {
-            background-color: var(--dark);
-            color: var(--light);
+            background-color: var(--crab-dark);
+            color: var(--crab-text);
+            line-height: 1.6;
             overflow-x: hidden;
         }
 
-        header {
-            background-color: rgba(18, 18, 18, 0.9);
-            backdrop-filter: blur(10px);
-            position: fixed;
+        .container {
             width: 100%;
-            z-index: 1000;
-            padding: 1rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header & Navigation */
+        header {
+            background-color: var(--crab-light);
+            padding: 20px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .header-content {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid rgba(255, 107, 53, 0.3);
         }
 
         .logo {
             display: flex;
             align-items: center;
-            gap: 10px;
-            font-weight: 700;
-            font-size: 1.5rem;
-            color: var(--light);
+            gap: 15px;
         }
 
-        .logo-icon {
-            color: var(--primary);
-            font-size: 2rem;
+        .logo-img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--crab-red);
+        }
+
+        .logo-text {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--crab-red);
+            letter-spacing: 1px;
         }
 
         nav ul {
             display: flex;
             list-style: none;
-            gap: 2rem;
+            gap: 30px;
         }
 
         nav a {
-            color: var(--light);
+            color: var(--crab-text);
             text-decoration: none;
             font-weight: 500;
-            transition: color 0.3s;
+            transition: color 0.3s ease;
             position: relative;
+            padding: 5px 0;
         }
 
             nav a:hover {
-                color: var(--primary);
+                color: var(--crab-red);
             }
 
             nav a::after {
                 content: '';
                 position: absolute;
+                bottom: 0;
+                left: 0;
                 width: 0;
                 height: 2px;
-                bottom: -5px;
-                left: 0;
-                background-color: var(--primary);
-                transition: width 0.3s;
+                background-color: var(--crab-red);
+                transition: width 0.3s ease;
             }
 
             nav a:hover::after {
                 width: 100%;
             }
 
-        .cta-button {
-            background: linear-gradient(45deg, var(--primary), var(--accent));
-            color: white;
+        .mobile-menu-btn {
+            display: none;
+            background: none;
             border: none;
-            padding: 0.8rem 1.5rem;
-            border-radius: 50px;
-            font-weight: 600;
+            color: var(--crab-text);
+            font-size: 1.5rem;
             cursor: pointer;
-            transition: transform 0.3s, box-shadow 0.3s;
         }
 
-            .cta-button:hover {
-                transform: translateY(-3px);
-                box-shadow: 0 10px 20px rgba(255, 107, 53, 0.3);
-            }
-
+        /* Hero Section */
         .hero {
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
+            padding: 80px 0;
             text-align: center;
-            padding: 2rem;
+            background: linear-gradient(to bottom, var(--crab-dark), var(--crab-light));
             position: relative;
             overflow: hidden;
         }
 
-        .hero-bg {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(circle at center, var(--darker) 0%, var(--dark) 70%);
-            z-index: -2;
+            .hero::before {
+                content: '';
+                position: absolute;
+                top: -50%;
+                left: -50%;
+                width: 200%;
+                height: 200%;
+                background: radial-gradient(circle, rgba(255,77,77,0.1) 0%, transparent 70%);
+                animation: pulse 15s infinite linear;
+            }
+
+        @keyframes pulse {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
         }
 
         .hero-content {
-            max-width: 800px;
-            z-index: 1;
+            position: relative;
+            z-index: 2;
         }
 
-        h1 {
-            font-size: 4rem;
-            margin-bottom: 1rem;
-            background: linear-gradient(45deg, var(--primary), var(--secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        .hero-avatar {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid var(--crab-red);
+            margin-bottom: 20px;
+            box-shadow: 0 0 30px rgba(255, 77, 77, 0.5);
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 15px;
+            color: var(--crab-text);
         }
 
         .hero p {
             font-size: 1.2rem;
-            margin-bottom: 2rem;
+            max-width: 700px;
+            margin: 0 auto 30px;
             color: #ccc;
         }
 
-        .hero-buttons {
-            display: flex;
-            gap: 1rem;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-
-        .secondary-button {
-            background: transparent;
-            color: var(--light);
-            border: 2px solid var(--primary);
-            padding: 0.8rem 1.5rem;
-            border-radius: 50px;
+        .cta-button {
+            display: inline-block;
+            background-color: var(--crab-red);
+            color: white;
+            padding: 12px 30px;
+            border-radius: 30px;
+            text-decoration: none;
             font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.3s ease;
+            border: 2px solid var(--crab-red);
         }
 
-            .secondary-button:hover {
-                background: rgba(255, 107, 53, 0.1);
+            .cta-button:hover {
+                background-color: transparent;
+                color: var(--crab-red);
                 transform: translateY(-3px);
+                box-shadow: 0 10px 20px rgba(255, 77, 77, 0.3);
             }
 
-        .features {
-            padding: 5rem 2rem;
-            background-color: var(--darker);
+        /* Videos Section */
+        .videos {
+            padding: 80px 0;
+            background-color: var(--crab-light);
         }
 
         .section-title {
             text-align: center;
-            margin-bottom: 4rem;
             font-size: 2.5rem;
-            color: var(--light);
-        }
-
-            .section-title span {
-                color: var(--primary);
-            }
-
-        .features-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .feature-card {
-            background: linear-gradient(145deg, #1a1a1a, #222);
-            border-radius: 15px;
-            padding: 2rem;
-            text-align: center;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-            transition: transform 0.3s;
-        }
-
-            .feature-card:hover {
-                transform: translateY(-10px);
-            }
-
-        .feature-icon {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-            color: var(--primary);
-        }
-
-        .feature-card h3 {
-            font-size: 1.5rem;
-            margin-bottom: 1rem;
-            color: var(--light);
-        }
-
-        .feature-card p {
-            color: #aaa;
-        }
-
-        .gallery {
-            padding: 5rem 2rem;
-            background-color: var(--dark);
-        }
-
-        .gallery-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 1.5rem;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .gallery-item {
-            border-radius: 15px;
-            overflow: hidden;
+            margin-bottom: 50px;
+            color: var(--crab-text);
             position: relative;
-            height: 250px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-            transition: transform 0.3s;
         }
 
-            .gallery-item:hover {
-                transform: scale(1.03);
+            .section-title::after {
+                content: '';
+                display: block;
+                width: 80px;
+                height: 4px;
+                background-color: var(--crab-red);
+                margin: 15px auto 0;
+                border-radius: 2px;
             }
 
-            .gallery-item img {
-                width: 100%;
-                height: 100%;
-                object-fit: cover;
-                transition: transform 0.5s;
+        .video-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .video-card {
+            background-color: var(--crab-dark);
+            border-radius: 10px;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+            .video-card:hover {
+                transform: translateY(-10px);
+                box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
             }
 
-            .gallery-item:hover img {
-                transform: scale(1.1);
-            }
-
-        .gallery-overlay {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
-            padding: 1.5rem;
-            opacity: 0;
-            transition: opacity 0.3s;
+        .video-thumb {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            display: block;
         }
 
-        .gallery-item:hover .gallery-overlay {
-            opacity: 1;
+        .video-info {
+            padding: 20px;
         }
 
-        .gallery-overlay h3 {
-            color: var(--light);
-            margin-bottom: 0.5rem;
+        .video-title {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            color: var(--crab-text);
         }
 
-        .gallery-overlay p {
-            color: #ccc;
+        .video-meta {
+            display: flex;
+            justify-content: space-between;
+            color: var(--gray);
             font-size: 0.9rem;
         }
 
-        .testimonials {
-            padding: 5rem 2rem;
-            background-color: var(--darker);
+        /* Business Section */
+        .business {
+            padding: 80px 0;
+            background-color: var(--crab-dark);
         }
 
-        .testimonials-container {
-            max-width: 1000px;
-            margin: 0 auto;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 2rem;
-            justify-content: center;
-        }
-
-        .testimonial-card {
-            background: linear-gradient(145deg, #1a1a1a, #222);
-            border-radius: 15px;
-            padding: 2rem;
-            flex: 1 1 300px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-        }
-
-        .testimonial-text {
-            font-style: italic;
-            margin-bottom: 1.5rem;
-            color: #ccc;
-        }
-
-        .testimonial-author {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        .author-avatar {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background: linear-gradient(45deg, var(--primary), var(--secondary));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-        }
-
-        .author-details h4 {
-            color: var(--light);
-        }
-
-        .author-details p {
-            color: var(--primary);
-            font-size: 0.9rem;
-        }
-
-        .cta-section {
-            padding: 5rem 2rem;
-            background: linear-gradient(to right, var(--darker), var(--dark));
-            text-align: center;
-        }
-
-        .cta-content {
+        .business-content {
             max-width: 800px;
             margin: 0 auto;
+            text-align: center;
         }
 
-            .cta-content h2 {
-                font-size: 2.5rem;
-                margin-bottom: 1.5rem;
-                color: var(--light);
+        .business-note {
+            background-color: var(--crab-light);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            border-left: 4px solid var(--crab-accent);
+        }
+
+        .contact-form {
+            background-color: var(--crab-light);
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+            .form-group label {
+                display: block;
+                margin-bottom: 8px;
+                font-weight: 500;
             }
 
-            .cta-content p {
-                color: #ccc;
-                margin-bottom: 2rem;
-                font-size: 1.1rem;
+            .form-group input,
+            .form-group textarea {
+                width: 100%;
+                padding: 12px 15px;
+                border: 1px solid #333;
+                border-radius: 5px;
+                background-color: var(--crab-dark);
+                color: var(--crab-text);
+                font-size: 1rem;
             }
 
-        .platforms {
+            .form-group textarea {
+                min-height: 150px;
+                resize: vertical;
+            }
+
+        .submit-btn {
+            background-color: var(--crab-accent);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 5px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            display: inline-block;
+        }
+
+            .submit-btn:hover {
+                background-color: #3da8e0;
+            }
+
+        /* About Section */
+        .about {
+            padding: 80px 0;
+            background-color: var(--crab-light);
+        }
+
+        .about-content {
             display: flex;
-            justify-content: center;
-            gap: 1rem;
-            margin-bottom: 2rem;
+            align-items: center;
+            gap: 50px;
             flex-wrap: wrap;
         }
 
-        .platform-button {
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            padding: 1rem 2rem;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            color: var(--light);
-            cursor: pointer;
-            transition: all 0.3s;
+        .about-text {
+            flex: 1;
+            min-width: 300px;
         }
 
-            .platform-button:hover {
-                background: rgba(255, 107, 53, 0.2);
-                transform: translateY(-3px);
-            }
+        .about-image {
+            flex: 1;
+            min-width: 300px;
+            text-align: center;
+        }
 
+        .about-img {
+            max-width: 100%;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Footer */
         footer {
-            background-color: var(--darker);
-            padding: 3rem 2rem;
-            border-top: 1px solid rgba(255, 107, 53, 0.2);
+            background-color: var(--crab-dark);
+            padding: 40px 0 20px;
+            border-top: 1px solid #333;
         }
 
         .footer-content {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 2rem;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 40px;
+            margin-bottom: 30px;
         }
 
-        .footer-column h3 {
-            color: var(--light);
-            margin-bottom: 1.5rem;
-            font-size: 1.2rem;
+        .footer-logo {
+            flex: 1;
+            min-width: 250px;
         }
 
-        .footer-column ul {
-            list-style: none;
+        .footer-links {
+            flex: 1;
+            min-width: 150px;
         }
 
-            .footer-column ul li {
-                margin-bottom: 0.8rem;
+            .footer-links h3 {
+                margin-bottom: 20px;
+                color: var(--crab-text);
             }
 
-        .footer-column a {
-            color: #aaa;
-            text-decoration: none;
-            transition: color 0.3s;
-        }
-
-            .footer-column a:hover {
-                color: var(--primary);
+            .footer-links ul {
+                list-style: none;
             }
+
+            .footer-links li {
+                margin-bottom: 10px;
+            }
+
+            .footer-links a {
+                color: #ccc;
+                text-decoration: none;
+                transition: color 0.3s ease;
+            }
+
+                .footer-links a:hover {
+                    color: var(--crab-red);
+                }
 
         .social-links {
             display: flex;
-            gap: 1rem;
-            margin-top: 1rem;
+            gap: 15px;
+            margin-top: 20px;
         }
 
             .social-links a {
@@ -438,278 +420,308 @@
                 width: 40px;
                 height: 40px;
                 border-radius: 50%;
-                background: rgba(255, 255, 255, 0.1);
-                transition: all 0.3s;
+                background-color: var(--crab-light);
+                color: var(--crab-text);
+                transition: all 0.3s ease;
             }
 
                 .social-links a:hover {
-                    background: var(--primary);
+                    background-color: var(--crab-red);
                     transform: translateY(-3px);
                 }
 
         .copyright {
             text-align: center;
-            margin-top: 3rem;
-            padding-top: 1.5rem;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            color: #777;
+            padding-top: 20px;
+            border-top: 1px solid #333;
+            color: #999;
             font-size: 0.9rem;
         }
 
+        /* Responsive Design */
         @media (max-width: 768px) {
-            h1 {
-                font-size: 2.5rem;
+            .header-content {
+                flex-direction: column;
+                gap: 20px;
             }
 
             nav ul {
-                display: none;
-            }
-
-            .hero-buttons {
                 flex-direction: column;
-                align-items: center;
+                gap: 15px;
+                text-align: center;
             }
 
-            .mobile-menu-btn {
-                display: block;
-                background: none;
-                border: none;
-                color: var(--light);
-                font-size: 1.5rem;
-                cursor: pointer;
-            }
-        }
-
-        /* Mobile menu */
-        .mobile-menu-btn {
-            display: none;
-        }
-
-        /* Animation */
-        @keyframes float {
-            0%, 100% {
-                transform: translateY(0);
+            .hero h1 {
+                font-size: 2.5rem;
             }
 
-            50% {
-                transform: translateY(-10px);
+            .video-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .about-content {
+                flex-direction: column;
+            }
+
+            .footer-content {
+                flex-direction: column;
             }
         }
 
-        .floating {
-            animation: float 5s ease-in-out infinite;
+        /* Live update notification */
+        .live-update {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: var(--crab-red);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 30px;
+            box-shadow: 0 5px 15px rgba(255, 77, 77, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            z-index: 1000;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(255, 77, 77, 0.7);
+            }
+
+            70% {
+                box-shadow: 0 0 0 10px rgba(255, 77, 77, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(255, 77, 77, 0);
+            }
         }
     </style>
 </head>
 <body>
+    <!-- Header -->
     <header>
-        <div class="logo">
-            <i class="fas fa-monkey logo-icon"></i>
-            <span>GORILLA TAG VR</span>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <img src="https://images.unsplash.com/photo-1611262588024-d12430b98920?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80" alt="imcrab logo" class="logo-img">
+                    <span class="logo-text">imcrab</span>
+                </div>
+                <nav>
+                    <ul>
+                        <li><a href="#home">Home</a></li>
+                        <li><a href="#videos">Videos</a></li>
+                        <li><a href="#business">Business</a></li>
+                        <li><a href="#about">About</a></li>
+                    </ul>
+                </nav>
+            </div>
         </div>
-        <nav>
-            <ul>
-                <li><a href="#">Home</a></li>
-                <li><a href="#">About</a></li>
-                <li><a href="#">Gameplay</a></li>
-                <li><a href="#">Community</a></li>
-                <li><a href="#">Store</a></li>
-                <li><a href="#">Support</a></li>
-            </ul>
-        </nav>
-        <button class="cta-button">GET THE GAME</button>
-        <button class="mobile-menu-btn">
-            <i class="fas fa-bars"></i>
-        </button>
     </header>
 
-    <section class="hero">
-        <div class="hero-bg"></div>
-        <div class="hero-content">
-            <h1>BECOME THE GORILLA</h1>
-            <p>Experience the ultimate VR movement-based tag game where you navigate as a gorilla using only your arms. Climb, jump, and swing through immersive environments with players worldwide.</p>
-            <div class="hero-buttons">
-                <button class="cta-button"><i class="fas fa-play"></i> WATCH TRAILER</button>
-                <button class="secondary-button"><i class="fas fa-store"></i> BUY NOW</button>
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <div class="container">
+            <div class="hero-content">
+                <img src="https://images.unsplash.com/photo-1611262588024-d12430b98920?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80" alt="imcrab" class="hero-avatar">
+                <h1>welcome to imcrab</h1>
+                <p>creating content that's definitely not crabby! subscribe for more awesome videos and join the crab community!</p>
+                <a href="https://youtube.com/@imcrab" class="cta-button">subscribe now</a>
             </div>
         </div>
     </section>
 
-    <section class="features">
-        <h2 class="section-title">WHY <span>GORILLA TAG</span> IS UNLIKE ANYTHING ELSE</h2>
-        <div class="features-grid">
-            <div class="feature-card">
-                <div class="feature-icon">
-                    <i class="fas fa-vr-cardboard"></i>
-                </div>
-                <h3>IMMERSIVE VR EXPERIENCE</h3>
-                <p>Feel what it's like to move like a gorilla in virtual reality with intuitive arm-based movement controls.</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon">
-                    <i class="fas fa-users"></i>
-                </div>
-                <h3>MULTIPLAYER MADNESS</h3>
-                <p>Join thousands of players in fast-paced tag matches or explore creative community maps together.</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon">
-                    <i class="fas fa-mountain"></i>
-                </div>
-                <h3>DYNAMIC ENVIRONMENTS</h3>
-                <p>Swing through lush jungle canopies, ancient ruins, and fantastical player-created worlds.</p>
+    <!-- Videos Section -->
+    <section class="videos" id="videos">
+        <div class="container">
+            <h2 class="section-title">latest videos</h2>
+            <div class="video-grid">
+                <!-- Videos will be loaded dynamically from YouTube API -->
+                <div class="video-loader">Loading videos from @imcrab...</div>
             </div>
         </div>
     </section>
 
-    <section class="gallery">
-        <h2 class="section-title">EXPLORE THE <span>JUNGLE</span></h2>
-        <div class="gallery-container">
-            <div class="gallery-item">
-                <img src="https://images.unsplash.com/photo-1593069567131-53a0614dde1d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80" alt="Gorilla Tag Gameplay">
-                <div class="gallery-overlay">
-                    <h3>Canopy Climbing</h3>
-                    <p>Scale towering trees with realistic climbing mechanics</p>
+    <!-- Business Section -->
+    <section class="business" id="business">
+        <div class="container">
+            <h2 class="section-title">business inquiries</h2>
+            <div class="business-content">
+                <div class="business-note">
+                    <p>this section is for business inquiries only. please use this form for professional collaboration requests. for fan mail or other messages, please use social media channels.</p>
                 </div>
-            </div>
-            <div class="gallery-item">
-                <img src="https://images.unsplash.com/photo-1516834474-48c0abc2a902?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80" alt="Multiplayer Action">
-                <div class="gallery-overlay">
-                    <h3>Multiplayer Mayhem</h3>
-                    <p>Challenge friends in intense matches of tag</p>
-                </div>
-            </div>
-            <div class="gallery-item">
-                <img src="https://images.unsplash.com/photo-1550745165-9bc0b252726f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80" alt="VR Experience">
-                <div class="gallery-overlay">
-                    <h3>Virtual Reality</h3>
-                    <p>Total immersion with VR-specific gameplay</p>
-                </div>
-            </div>
-        </div>
-    </section>
 
-    <section class="testimonials">
-        <h2 class="section-title">WHAT <span>PLAYERS</span> SAY</h2>
-        <div class="testimonials-container">
-            <div class="testimonial-card">
-                <p class="testimonial-text">"Gorilla Tag is the most innovative VR game I've ever played. The movement system is genius and once you get the hang of it, there's nothing else like it."</p>
-                <div class="testimonial-author">
-                    <div class="author-avatar">MJ</div>
-                    <div class="author-details">
-                        <h4>Mike Johnson</h4>
-                        <p>VR Enthusiast</p>
+                <form class="contact-form" id="business-form">
+                    <div class="form-group">
+                        <label for="email">your email</label>
+                        <input type="email" id="email" name="email" required>
                     </div>
-                </div>
-            </div>
-            <div class="testimonial-card">
-                <p class="testimonial-text">"I've never experienced such physical gameplay in VR before. It's an amazing workout and incredibly fun at the same time. The community is fantastic too!"</p>
-                <div class="testimonial-author">
-                    <div class="author-avatar">SL</div>
-                    <div class="author-details">
-                        <h4>Sarah Lewis</h4>
-                        <p>Professional Streamer</p>
+
+                    <div class="form-group">
+                        <label for="name">your name</label>
+                        <input type="text" id="name" name="name" required>
                     </div>
+
+                    <div class="form-group">
+                        <label for="message">your message</label>
+                        <textarea id="message" name="message" required></textarea>
+                    </div>
+
+                    <button type="submit" class="submit-btn">send message</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section class="about" id="about">
+        <div class="container">
+            <h2 class="section-title">about imcrab</h2>
+            <div class="about-content">
+                <div class="about-text">
+                    <p>hey there! i'm imcrab, a content creator who loves making videos about gaming, tech, and just having a good time online.</p>
+                    <p>i started this channel because i wanted to share my passion with others and build a community of people who enjoy the same things i do.</p>
+                    <p>when i'm not creating content, you can find me playing games, trying out new tech, or just chilling with friends.</p>
+                    <p>make sure to subscribe to my channel and hit the bell icon so you don't miss any of my new videos!</p>
+                </div>
+                <div class="about-image">
+                    <img src="https://images.unsplash.com/photo-1567095761054-7a02e69e5c43?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80" alt="About imcrab" class="about-img">
                 </div>
             </div>
         </div>
     </section>
 
-    <section class="cta-section">
-        <div class="cta-content">
-            <h2>READY TO JOIN THE TROOP?</h2>
-            <p>Available on all major VR platforms. Grab your headset and start swinging!</p>
-            <div class="platforms">
-                <button class="platform-button">
-                    <i class="fab fa-steam"></i> SteamVR
-                </button>
-                <button class="platform-button">
-                    <i class="fab fa-oculus"></i> Oculus Store
-                </button>
-                <button class="platform-button">
-                    <i class="fas fa-vr-cardboard"></i> App Lab
-                </button>
-            </div>
-            <button class="cta-button">GET GORILLA TAG NOW</button>
-        </div>
-    </section>
-
+    <!-- Footer -->
     <footer>
-        <div class="footer-content">
-            <div class="footer-column">
-                <h3>GORILLA TAG</h3>
-                <p>The ultimate VR movement-based tag game where you become the gorilla.</p>
-                <div class="social-links">
-                    <a href="#"><i class="fab fa-discord"></i></a>
-                    <a href="#"><i class="fab fa-twitter"></i></a>
-                    <a href="#"><i class="fab fa-youtube"></i></a>
-                    <a href="#"><i class="fab fa-twitch"></i></a>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <div class="logo">
+                        <img src="https://images.unsplash.com/photo-1611262588024-d12430b98920?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80" alt="imcrab logo" class="logo-img">
+                        <span class="logo-text">imcrab</span>
+                    </div>
+                    <p>creating content that's definitely not crabby!</p>
+                    <div class="social-links">
+                        <a href="https://youtube.com/@imcrab"><i class="fab fa-youtube"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-discord"></i></a>
+                    </div>
+                </div>
+
+                <div class="footer-links">
+                    <h3>quick links</h3>
+                    <ul>
+                        <li><a href="#home">home</a></li>
+                        <li><a href="#videos">videos</a></li>
+                        <li><a href="#business">business</a></li>
+                        <li><a href="#about">about</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-links">
+                    <h3>resources</h3>
+                    <ul>
+                        <li><a href="#">faq</a></li>
+                        <li><a href="#">privacy policy</a></li>
+                        <li><a href="#">terms of service</a></li>
+                        <li><a href="#">contact</a></li>
+                    </ul>
                 </div>
             </div>
-            <div class="footer-column">
-                <h3>QUICK LINKS</h3>
-                <ul>
-                    <li><a href="#">Home</a></li>
-                    <li><a href="#">Download</a></li>
-                    <li><a href="#">Gameplay</a></li>
-                    <li><a href="#">FAQ</a></li>
-                    <li><a href="#">Support</a></li>
-                </ul>
+
+            <div class="copyright">
+                <p>&copy; 2023 imcrab. all rights reserved. no crabs were harmed in the making of this channel.</p>
             </div>
-            <div class="footer-column">
-                <h3>LEGAL</h3>
-                <ul>
-                    <li><a href="#">Privacy Policy</a></li>
-                    <li><a href="#">Terms of Service</a></li>
-                    <li><a href="#">EULA</a></li>
-                    <li><a href="#">Refund Policy</a></li>
-                </ul>
-            </div>
-            <div class="footer-column">
-                <h3>CONTACT</h3>
-                <ul>
-                    <li><a href="#">support@gorillatagvr.com</a></li>
-                    <li><a href="#">Partnership Inquiries</a></li>
-                    <li><a href="#">Press Kit</a></li>
-                </ul>
-            </div>
-        </div>
-        <div class="copyright">
-            <p>&copy; 2023 Gorilla Tag VR. All rights reserved. This is a fan-made website for demonstration purposes.</p>
         </div>
     </footer>
 
+    <!-- Live Update Notification -->
+    <div class="live-update">
+        <i class="fas fa-sync-alt"></i>
+        <span>live updates enabled</span>
+    </div>
+
     <script>
-        // Simple animation for gallery items on scroll
-        document.addEventListener('DOMContentLoaded', function() {
-            const galleryItems = document.querySelectorAll('.gallery-item');
+        // ====== Business Form Submission via Discord Webhook ======
+        const webhookURL = "https://discord.com/api/webhooks/1405705763539910791/O2VJSkdphR0QRIrv424ErLdFISsN1mRPtLlzDT8DXtVkOsi1kVYr7SulRwVYktteQC47";
 
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.style.opacity = 1;
-                        entry.target.style.transform = 'translateY(0)';
-                    }
+        document.getElementById('business-form').addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            const email = document.getElementById('email').value;
+            const name = document.getElementById('name').value;
+            const message = document.getElementById('message').value;
+
+            const payload = {
+                content: `**New Business Inquiry**\n**Name:** ${name}\n**Email:** ${email}\n**Message:** ${message}`
+            };
+
+            try {
+                await fetch(webhookURL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
                 });
-            }, { threshold: 0.1 });
 
-            galleryItems.forEach(item => {
-                item.style.opacity = 0;
-                item.style.transform = 'translateY(50px)';
-                item.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
-                observer.observe(item);
-            });
-
-            // Mobile menu toggle
-            const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
-            const nav = document.querySelector('nav ul');
-
-            if (mobileMenuBtn) {
-                mobileMenuBtn.addEventListener('click', () => {
-                    nav.style.display = nav.style.display === 'flex' ? 'none' : 'flex';
-                });
+                alert(`Thanks for your message, ${name}! It has been sent successfully.`);
+                document.getElementById('business-form').reset();
+            } catch (err) {
+                console.error('Error sending to Discord webhook:', err);
+                alert('Oops! Something went wrong while sending your message.');
             }
         });
+
+        // ====== YouTube API Integration ======
+        const youtubeAPIKey = "AIzaSyDtfhqzZU3Ob_Q1C1MaDJhoQTHo2Nl31Xg"; // <-- Add your API key here
+        const channelID = "UCvioLqKnp-cychVIYHgOG3Q"; // <-- Your channel ID
+        const maxResults = 6;
+
+        async function fetchYouTubeVideos() {
+            const videoContainer = document.getElementById('video-container');
+            videoContainer.innerHTML = `<div class="loading"><i class="fas fa-spinner"></i><p>loading videos from @imcrab...</p></div>`;
+
+            try {
+                // Step 1: Get Uploads Playlist ID
+                const channelResponse = await fetch(`https://www.googleapis.com/youtube/v3/channels?part=contentDetails&id=${channelID}&key=${youtubeAPIKey}`);
+                const channelData = await channelResponse.json();
+                const uploadsPlaylistID = channelData.items[0].contentDetails.relatedPlaylists.uploads;
+
+                // Step 2: Get Playlist Items
+                const playlistResponse = await fetch(`https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=${uploadsPlaylistID}&maxResults=${maxResults}&key=${youtubeAPIKey}`);
+                const playlistData = await playlistResponse.json();
+
+                // Clear loading
+                videoContainer.innerHTML = '';
+
+                playlistData.items.forEach(item => {
+                    const videoCard = document.createElement('div');
+                    videoCard.className = 'video-card';
+                    videoCard.innerHTML = `
+                        <img src="${item.snippet.thumbnails.high.url}" alt="Video Thumbnail" class="video-thumb">
+                        <div class="video-info">
+                            <h3 class="video-title">${item.snippet.title}</h3>
+                            <div class="video-meta">
+                                <span>by imcrab</span>
+                                <span>${new Date(item.snippet.publishedAt).toLocaleDateString()}</span>
+                            </div>
+                        </div>
+                    `;
+                    videoContainer.appendChild(videoCard);
+                });
+
+            } catch (err) {
+                console.error('Error fetching YouTube videos:', err);
+                videoContainer.innerHTML = '<p>Unable to load videos at this time. Please check back later.</p>';
+            }
+        }
+
+        // ====== Initialize ======
+        fetchYouTubeVideos();
+        setInterval(fetchYouTubeVideos, 60000); // refresh every minute
     </script>
+
 </body>
 </html>
