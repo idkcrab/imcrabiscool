@@ -1,0 +1,942 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CloudDrive - Google Drive Clone</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            background-color: #f8f9fa;
+            color: #202124;
+            overflow: hidden;
+        }
+
+        /* Header Styles */
+        header {
+            display: flex;
+            align-items: center;
+            padding: 10px 20px;
+            background-color: white;
+            border-bottom: 1px solid #e0e0e0;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            margin-right: 20px;
+            color: #1a73e8;
+            font-weight: bold;
+            font-size: 22px;
+        }
+
+            .logo i {
+                margin-right: 10px;
+                font-size: 28px;
+            }
+
+        .search-bar {
+            flex: 1;
+            max-width: 720px;
+            margin: 0 20px;
+            position: relative;
+        }
+
+            .search-bar input {
+                width: 100%;
+                padding: 12px 20px 12px 45px;
+                border-radius: 8px;
+                border: 1px solid #e0e0e0;
+                background-color: #f1f3f4;
+                font-size: 16px;
+                transition: background-color 0.3s;
+            }
+
+                .search-bar input:focus {
+                    background-color: white;
+                    box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.2);
+                    outline: none;
+                }
+
+            .search-bar i {
+                position: absolute;
+                left: 15px;
+                top: 50%;
+                transform: translateY(-50%);
+                color: #5f6368;
+            }
+
+        .user-actions {
+            display: flex;
+            align-items: center;
+        }
+
+            .user-actions button {
+                background: none;
+                border: none;
+                cursor: pointer;
+                margin-left: 15px;
+                color: #5f6368;
+                font-size: 16px;
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+                .user-actions button:hover {
+                    background-color: #f1f3f4;
+                }
+
+            .user-actions .user-avatar {
+                width: 35px;
+                height: 35px;
+                border-radius: 50%;
+                background-color: #1a73e8;
+                color: white;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin-left: 15px;
+                font-weight: bold;
+                cursor: pointer;
+            }
+
+        /* Main Content Layout */
+        .main-container {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: 250px;
+            background-color: white;
+            padding: 20px 0;
+            border-right: 1px solid #e0e0e0;
+            overflow-y: auto;
+        }
+
+        .sidebar-item {
+            display: flex;
+            align-items: center;
+            padding: 10px 20px;
+            cursor: pointer;
+            color: #202124;
+            text-decoration: none;
+            border-radius: 0 20px 20px 0;
+            margin-right: 10px;
+            transition: background-color 0.2s;
+        }
+
+            .sidebar-item:hover {
+                background-color: #f1f3f4;
+            }
+
+            .sidebar-item.active {
+                background-color: #e8f0fe;
+                color: #1a73e8;
+            }
+
+            .sidebar-item i {
+                margin-right: 15px;
+                font-size: 18px;
+                width: 24px;
+                text-align: center;
+            }
+
+        .storage-info {
+            padding: 20px;
+            margin-top: 20px;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .storage-progress {
+            height: 5px;
+            background-color: #f1f3f4;
+            border-radius: 5px;
+            margin: 10px 0;
+            overflow: hidden;
+        }
+
+        .storage-progress-inner {
+            height: 100%;
+            background-color: #1a73e8;
+            border-radius: 5px;
+            width: 35%;
+        }
+
+        /* File Content Area */
+        .content {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .content-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+            .content-header h2 {
+                font-weight: 500;
+                color: #202124;
+            }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+            .action-buttons button {
+                background-color: #1a73e8;
+                color: white;
+                border: none;
+                padding: 10px 15px;
+                border-radius: 5px;
+                cursor: pointer;
+                display: inline-flex;
+                align-items: center;
+                font-weight: 500;
+                transition: background-color 0.2s;
+            }
+
+                .action-buttons button:hover {
+                    background-color: #1967d2;
+                    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+                }
+
+                .action-buttons button i {
+                    margin-right: 8px;
+                }
+
+        /* File Grid */
+        .files-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 20px;
+        }
+
+        .file-card {
+            background-color: white;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            position: relative;
+        }
+
+            .file-card:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+            }
+
+            .file-card.selected {
+                border: 2px solid #1a73e8;
+                background-color: #e8f0fe;
+            }
+
+        .file-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+
+        .doc {
+            color: #1a73e8;
+        }
+
+        .img {
+            color: #0f9d58;
+        }
+
+        .vid {
+            color: #e91e63;
+        }
+
+        .zip {
+            color: #ff9800;
+        }
+
+        .pdf {
+            color: #db4437;
+        }
+
+        .folder {
+            color: #f4b400;
+        }
+
+        .file-name {
+            font-weight: 500;
+            margin-bottom: 5px;
+            word-break: break-word;
+            font-size: 14px;
+        }
+
+        .file-details {
+            color: #5f6368;
+            font-size: 12px;
+        }
+
+        /* Upload Area */
+        .upload-area {
+            border: 2px dashed #dadce0;
+            border-radius: 8px;
+            padding: 30px;
+            text-align: center;
+            margin-top: 20px;
+            background-color: #f8f9fa;
+            transition: background-color 0.3s;
+            display: none;
+        }
+
+            .upload-area.active {
+                display: block;
+            }
+
+            .upload-area.highlight {
+                background-color: #e8f0fe;
+                border-color: #1a73e8;
+            }
+
+            .upload-area i {
+                font-size: 42px;
+                color: #1a73e8;
+                margin-bottom: 15px;
+            }
+
+            .upload-area p {
+                color: #5f6368;
+                margin-bottom: 15px;
+            }
+
+            .upload-area button {
+                background-color: #1a73e8;
+                color: white;
+                border: none;
+                padding: 10px 20px;
+                border-radius: 5px;
+                cursor: pointer;
+                font-weight: 500;
+            }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 80px;
+            }
+
+            .sidebar-item span {
+                display: none;
+            }
+
+            .sidebar-item i {
+                margin-right: 0;
+            }
+
+            .files-grid {
+                grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            }
+
+            .search-bar {
+                max-width: 150px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .search-bar {
+                display: none;
+            }
+
+            .logo span {
+                display: none;
+            }
+
+            .files-grid {
+                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            }
+
+            .content-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            .action-buttons {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+                .action-buttons button {
+                    flex: 1;
+                    justify-content: center;
+                }
+        }
+
+        /* Context Menu */
+        .context-menu {
+            display: none;
+            position: absolute;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            width: 200px;
+        }
+
+            .context-menu.active {
+                display: block;
+            }
+
+        .context-menu-item {
+            padding: 12px 15px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            color: #202124;
+        }
+
+            .context-menu-item:hover {
+                background-color: #f1f3f4;
+            }
+
+            .context-menu-item i {
+                margin-right: 10px;
+                color: #5f6368;
+            }
+
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #323232;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 4px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            transform: translateY(100px);
+            transition: opacity 0.3s, transform 0.3s;
+        }
+
+            .toast.active {
+                opacity: 1;
+                transform: translateY(0);
+            }
+
+            .toast i {
+                margin-right: 10px;
+                font-size: 18px;
+            }
+
+        /* Loading spinner */
+        .spinner {
+            width: 40px;
+            height: 40px;
+            margin: 20px auto;
+            border: 4px solid #f1f3f4;
+            border-top: 4px solid #1a73e8;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            display: none;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="logo">
+            <i class="fas fa-cloud"></i>
+            <span>CloudDrive</span>
+        </div>
+
+        <div class="search-bar">
+            <i class="fas fa-search"></i>
+            <input type="text" placeholder="Search files" id="searchInput">
+        </div>
+
+        <div class="user-actions">
+            <button title="Settings"><i class="fas fa-cog"></i></button>
+            <button title="Apps"><i class="fas fa-grid"></i></button>
+            <button title="Notifications"><i class="fas fa-bell"></i></button>
+            <div class="user-avatar" title="John Doe">JD</div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="main-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <a href="#" class="sidebar-item active">
+                <i class="fas fa-home"></i>
+                <span>My Drive</span>
+            </a>
+            <a href="#" class="sidebar-item">
+                <i class="fas fa-laptop"></i>
+                <span>Computers</span>
+            </a>
+            <a href="#" class="sidebar-item">
+                <i class="fas fa-share-alt"></i>
+                <span>Shared with me</span>
+            </a>
+            <a href="#" class="sidebar-item">
+                <i class="fas fa-clock"></i>
+                <span>Recent</span>
+            </a>
+            <a href="#" class="sidebar-item">
+                <i class="fas fa-star"></i>
+                <span>Starred</span>
+            </a>
+            <a href="#" class="sidebar-item">
+                <i class="fas fa-trash"></i>
+                <span>Trash</span>
+            </a>
+
+            <div class="storage-info">
+                <p>Storage</p>
+                <div class="storage-progress">
+                    <div class="storage-progress-inner"></div>
+                </div>
+                <p class="file-details">5.2 GB of 15 GB used</p>
+            </div>
+        </div>
+
+        <!-- Content Area -->
+        <div class="content">
+            <div class="content-header">
+                <h2>My Files</h2>
+                <div class="action-buttons">
+                    <button id="newFolderBtn"><i class="fas fa-folder-plus"></i> New Folder</button>
+                    <button id="uploadBtn"><i class="fas fa-file-upload"></i> Upload</button>
+                </div>
+            </div>
+
+            <div class="spinner" id="loadingSpinner"></div>
+
+            <div class="files-grid" id="filesGrid">
+                <!-- File Cards will be generated here -->
+            </div>
+
+            <div class="upload-area" id="uploadArea">
+                <i class="fas fa-cloud-upload-alt"></i>
+                <p>Drag and drop files here or click the button below</p>
+                <button id="browseBtn">Browse Files</button>
+                <input type="file" id="fileInput" multiple style="display: none;">
+            </div>
+        </div>
+    </div>
+
+    <!-- Context Menu -->
+    <div class="context-menu" id="contextMenu">
+        <div class="context-menu-item" id="downloadBtn">
+            <i class="fas fa-download"></i> Download
+        </div>
+        <div class="context-menu-item" id="shareBtn">
+            <i class="fas fa-share"></i> Share
+        </div>
+        <div class="context-menu-item" id="renameBtn">
+            <i class="fas fa-edit"></i> Rename
+        </div>
+        <div class="context-menu-item" id="deleteBtn">
+            <i class="fas fa-trash"></i> Move to trash
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast">
+        <i class="fas fa-check-circle"></i>
+        <span id="toastMessage">Operation completed successfully</span>
+    </div>
+
+    <script>
+        // File data structure
+        let files = JSON.parse(localStorage.getItem('cloudDriveFiles')) || [
+            { id: 1, name: 'Project Proposal.docx', type: 'doc', size: '125 KB', date: 'Today' },
+            { id: 2, name: 'Budget 2023.xlsx', type: 'doc', size: '356 KB', date: 'Yesterday' },
+            { id: 3, name: 'Quarterly Review.pptx', type: 'doc', size: '2.3 MB', date: '2 days ago' },
+            { id: 4, name: 'Report Final.pdf', type: 'pdf', size: '1.8 MB', date: '3 days ago' },
+            { id: 5, name: 'Vacation Photo.jpg', type: 'img', size: '4.2 MB', date: '1 week ago' },
+            { id: 6, name: 'Screenshot.png', type: 'img', size: '850 KB', date: '2 weeks ago' },
+            { id: 7, name: 'Tutorial.mp4', type: 'vid', size: '15.7 MB', date: '3 weeks ago' },
+            { id: 8, name: 'Project Files.zip', type: 'zip', size: '10.5 MB', date: '1 month ago' }
+        ];
+
+        // DOM Elements
+        const filesGrid = document.getElementById('filesGrid');
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        const browseBtn = document.getElementById('browseBtn');
+        const uploadBtn = document.getElementById('uploadBtn');
+        const newFolderBtn = document.getElementById('newFolderBtn');
+        const contextMenu = document.getElementById('contextMenu');
+        const toast = document.getElementById('toast');
+        const toastMessage = document.getElementById('toastMessage');
+        const searchInput = document.getElementById('searchInput');
+        const loadingSpinner = document.getElementById('loadingSpinner');
+
+        // Selected file
+        let selectedFile = null;
+
+        // Initialize the page
+        function init() {
+            renderFiles();
+            setupEventListeners();
+        }
+
+        // Render files to the grid
+        function renderFiles() {
+            filesGrid.innerHTML = '';
+
+            if (files.length === 0) {
+                filesGrid.innerHTML = `
+                        <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #5f6368;">
+                            <i class="fas fa-folder-open" style="font-size: 48px; margin-bottom: 15px;"></i>
+                            <h3>No files yet</h3>
+                            <p>Upload your first file by clicking the Upload button</p>
+                        </div>
+                    `;
+                return;
+            }
+
+            files.forEach(file => {
+                const fileCard = document.createElement('div');
+                fileCard.className = 'file-card';
+                fileCard.dataset.id = file.id;
+
+                let iconClass = 'fas fa-file';
+                if (file.type === 'doc') iconClass = 'fas fa-file-word';
+                else if (file.type === 'pdf') iconClass = 'fas fa-file-pdf';
+                else if (file.type === 'img') iconClass = 'fas fa-file-image';
+                else if (file.type === 'vid') iconClass = 'fas fa-file-video';
+                else if (file.type === 'zip') iconClass = 'fas fa-file-archive';
+                else if (file.type === 'folder') iconClass = 'fas fa-folder';
+
+                fileCard.innerHTML = `
+                        <div class="file-icon ${file.type}"><i class="${iconClass}"></i></div>
+                        <div class="file-name">${file.name}</div>
+                        <div class="file-details">${file.size} · ${file.date}</div>
+                    `;
+
+                filesGrid.appendChild(fileCard);
+            });
+        }
+
+        // Set up event listeners
+        function setupEventListeners() {
+            // Upload button click
+            uploadBtn.addEventListener('click', () => {
+                uploadArea.classList.toggle('active');
+            });
+
+            // Browse files button
+            browseBtn.addEventListener('click', () => {
+                fileInput.click();
+            });
+
+            // File input change
+            fileInput.addEventListener('change', handleFileUpload);
+
+            // New folder button
+            newFolderBtn.addEventListener('click', createNewFolder);
+
+            // Drag and drop events
+            uploadArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                uploadArea.classList.add('highlight');
+            });
+
+            uploadArea.addEventListener('dragleave', () => {
+                uploadArea.classList.remove('highlight');
+            });
+
+            uploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                uploadArea.classList.remove('highlight');
+
+                if (e.dataTransfer.files.length > 0) {
+                    simulateUploadProcess(e.dataTransfer.files);
+                }
+            });
+
+            // File card events
+            filesGrid.addEventListener('click', (e) => {
+                const fileCard = e.target.closest('.file-card');
+                if (fileCard) {
+                    const fileId = parseInt(fileCard.dataset.id);
+                    selectFile(fileId);
+                }
+            });
+
+            filesGrid.addEventListener('dblclick', (e) => {
+                const fileCard = e.target.closest('.file-card');
+                if (fileCard) {
+                    const fileId = parseInt(fileCard.dataset.id);
+                    const file = files.find(f => f.id === fileId);
+                    showToast(`Opening ${file.name}`);
+                }
+            });
+
+            filesGrid.addEventListener('contextmenu', (e) => {
+                const fileCard = e.target.closest('.file-card');
+                if (fileCard) {
+                    e.preventDefault();
+                    const fileId = parseInt(fileCard.dataset.id);
+                    selectFile(fileId);
+
+                    // Position context menu
+                    contextMenu.style.top = `${e.pageY}px`;
+                    contextMenu.style.left = `${e.pageX}px`;
+                    contextMenu.classList.add('active');
+                }
+            });
+
+            // Context menu events
+            document.addEventListener('click', (e) => {
+                if (!contextMenu.contains(e.target)) {
+                    contextMenu.classList.remove('active');
+                }
+            });
+
+            downloadBtn.addEventListener('click', downloadFile);
+            shareBtn.addEventListener('click', shareFile);
+            renameBtn.addEventListener('click', renameFile);
+            deleteBtn.addEventListener('click', deleteFile);
+
+            // Search input
+            searchInput.addEventListener('input', () => {
+                const searchTerm = searchInput.value.toLowerCase();
+                filterFiles(searchTerm);
+            });
+        }
+
+        // Handle file upload
+        function handleFileUpload(e) {
+            if (e.target.files.length > 0) {
+                simulateUploadProcess(e.target.files);
+            }
+        }
+
+        // Simulate upload process
+        function simulateUploadProcess(fileList) {
+            loadingSpinner.style.display = 'block';
+            uploadArea.classList.remove('active');
+
+            setTimeout(() => {
+                for (let i = 0; i < fileList.length; i++) {
+                    const file = fileList[i];
+                    const fileName = file.name;
+                    const fileExtension = fileName.split('.').pop().toLowerCase();
+
+                    let fileType = 'doc';
+                    if (['jpg', 'jpeg', 'png', 'gif', 'bmp'].includes(fileExtension)) fileType = 'img';
+                    else if (['pdf'].includes(fileExtension)) fileType = 'pdf';
+                    else if (['mp4', 'mov', 'avi', 'wmv'].includes(fileExtension)) fileType = 'vid';
+                    else if (['zip', 'rar', '7z'].includes(fileExtension)) fileType = 'zip';
+
+                    const newFile = {
+                        id: Date.now() + i,
+                        name: fileName,
+                        type: fileType,
+                        size: formatFileSize(file.size),
+                        date: 'Just now'
+                    };
+
+                    files.unshift(newFile);
+                }
+
+                saveFiles();
+                renderFiles();
+                loadingSpinner.style.display = 'none';
+                showToast(`Uploaded ${fileList.length} file(s)`);
+            }, 1500);
+        }
+
+        // Format file size
+        function formatFileSize(bytes) {
+            if (bytes < 1024) return bytes + ' B';
+            else if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
+            else return (bytes / 1048576).toFixed(1) + ' MB';
+        }
+
+        // Create new folder
+        function createNewFolder() {
+            const folderName = prompt('Enter folder name:', 'New Folder');
+
+            if (folderName) {
+                const newFolder = {
+                    id: Date.now(),
+                    name: folderName,
+                    type: 'folder',
+                    size: '—',
+                    date: 'Just now'
+                };
+
+                files.unshift(newFolder);
+                saveFiles();
+                renderFiles();
+                showToast(`Folder "${folderName}" created`);
+            }
+        }
+
+        // Select file
+        function selectFile(fileId) {
+            // Remove selected class from all files
+            document.querySelectorAll('.file-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+
+            // Add selected class to clicked file
+            const fileCard = document.querySelector(`.file-card[data-id="${fileId}"]`);
+            if (fileCard) {
+                fileCard.classList.add('selected');
+                selectedFile = files.find(f => f.id === fileId);
+            }
+        }
+
+        // Download file
+        function downloadFile() {
+            if (selectedFile) {
+                showToast(`Downloading ${selectedFile.name}`);
+                contextMenu.classList.remove('active');
+
+                // Create a dummy download link
+                const a = document.createElement('a');
+                a.href = 'javascript:void(0)';
+                a.download = selectedFile.name;
+                a.click();
+            }
+        }
+
+        // Share file
+        function shareFile() {
+            if (selectedFile) {
+                showToast(`Sharing options for ${selectedFile.name}`);
+                contextMenu.classList.remove('active');
+            }
+        }
+
+        // Rename file
+        function renameFile() {
+            if (selectedFile) {
+                const newName = prompt('Enter new name:', selectedFile.name);
+
+                if (newName && newName !== selectedFile.name) {
+                    selectedFile.name = newName;
+                    selectedFile.date = 'Just now';
+                    saveFiles();
+                    renderFiles();
+                    showToast('File renamed');
+                }
+
+                contextMenu.classList.remove('active');
+            }
+        }
+
+        // Delete file
+        function deleteFile() {
+            if (selectedFile) {
+                if (confirm(`Move "${selectedFile.name}" to trash?`)) {
+                    files = files.filter(f => f.id !== selectedFile.id);
+                    saveFiles();
+                    renderFiles();
+                    showToast('File moved to trash');
+                }
+
+                contextMenu.classList.remove('active');
+            }
+        }
+
+        // Filter files based on search term
+        function filterFiles(searchTerm) {
+            const filteredFiles = searchTerm
+                ? files.filter(file => file.name.toLowerCase().includes(searchTerm))
+                : files;
+
+            filesGrid.innerHTML = '';
+
+            if (filteredFiles.length === 0) {
+                filesGrid.innerHTML = `
+                        <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #5f6368;">
+                            <i class="fas fa-search" style="font-size: 48px; margin-bottom: 15px;"></i>
+                            <h3>No matching files</h3>
+                            <p>Try a different search term</p>
+                        </div>
+                    `;
+                return;
+            }
+
+            filteredFiles.forEach(file => {
+                const fileCard = document.createElement('div');
+                fileCard.className = 'file-card';
+                fileCard.dataset.id = file.id;
+
+                let iconClass = 'fas fa-file';
+                if (file.type === 'doc') iconClass = 'fas fa-file-word';
+                else if (file.type === 'pdf') iconClass = 'fas fa-file-pdf';
+                else if (file.type === 'img') iconClass = 'fas fa-file-image';
+                else if (file.type === 'vid') iconClass = 'fas fa-file-video';
+                else if (file.type === 'zip') iconClass = 'fas fa-file-archive';
+                else if (file.type === 'folder') iconClass = 'fas fa-folder';
+
+                fileCard.innerHTML = `
+                        <div class="file-icon ${file.type}"><i class="${iconClass}"></i></div>
+                        <div class="file-name">${file.name}</div>
+                        <div class="file-details">${file.size} · ${file.date}</div>
+                    `;
+
+                filesGrid.appendChild(fileCard);
+            });
+        }
+
+        // Show toast notification
+        function showToast(message) {
+            toastMessage.textContent = message;
+            toast.classList.add('active');
+
+            setTimeout(() => {
+                toast.classList.remove('active');
+            }, 3000);
+        }
+
+        // Save files to localStorage
+        function saveFiles() {
+            localStorage.setItem('cloudDriveFiles', JSON.stringify(files));
+        }
+
+        // Initialize the app
+        init();
+    </script>
+</body>
+</html>
