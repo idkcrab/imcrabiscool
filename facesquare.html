@@ -1,76 +1,28 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Face Detection Camera</title>
-  <script defer src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.9.0"></script>
-  <script defer src="https://cdn.jsdelivr.net/npm/face-api.js"></script>
+  <meta charset="utf-8">
+  <title>Camera Test</title>
   <style>
-    body {
-      margin: 0;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      background: black;
-    }
-    #video {
-      position: absolute;
-      width: 100vw;
-      height: auto;
-      transform: scaleX(-1); /* mirror for selfie */
-    }
-    #overlay {
-      position: absolute;
-      top: 0;
-      left: 0;
-    }
+    body { margin: 0; background: black; display: flex; justify-content: center; align-items: center; height: 100vh; }
+    video { width: 100%; height: auto; transform: scaleX(-1); }
   </style>
 </head>
 <body>
-  <video id="video" autoplay muted playsinline></video>
-  <canvas id="overlay"></canvas>
+  <video id="video" autoplay playsinline></video>
 
   <script>
-    const video = document.getElementById("video");
-    const canvas = document.getElementById("overlay");
-    const ctx = canvas.getContext("2d");
-
     async function startCamera() {
       try {
         const stream = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode: "user" }, // front camera
-          audio: false
+          video: { facingMode: "user" }
         });
-        video.srcObject = stream;
+        document.getElementById("video").srcObject = stream;
       } catch (err) {
-        alert("Camera access denied: " + err);
+        alert("Error: " + err.message);
       }
     }
-
-    async function loadModels() {
-      await faceapi.nets.tinyFaceDetector.loadFromUri("https://cdn.jsdelivr.net/npm/face-api.js/models");
-    }
-
-    video.addEventListener("play", () => {
-      canvas.width = video.videoWidth;
-      canvas.height = video.videoHeight;
-
-      setInterval(async () => {
-        const detections = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions());
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-        detections.forEach(detection => {
-          const { x, y, width, height } = detection.box;
-          ctx.strokeStyle = "red";
-          ctx.lineWidth = 3;
-          ctx.strokeRect(x, y, width, height);
-        });
-      }, 100);
-    });
-
-    loadModels().then(startCamera);
+    startCamera();
   </script>
 </body>
 </html>
