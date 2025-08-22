@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>imcrab Subscriber Count</title>
+    <style>
+        body {
+            background-color: black;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            font-size: 5rem;
+            font-family: Arial, sans-serif;
+        }
+    </style>
+</head>
+<body>
+    <div id="subscriber-count">Loading...</div>
+
+    <script>
+        const apiKey = "AIzaSyDtfhqzZU3Ob_Q1C1MaDJhoQTHo2Nl31Xg"; // <-- Replace with your YouTube Data API v3 key
+        const channelId = "UCvioLqKnp-cychVIYHgOG3Q"; // Channel ID of @imcrab
+        const subscriberDiv = document.getElementById("subscriber-count");
+
+        async function getSubscriberCount() {
+            try {
+                const res = await fetch(`https://www.googleapis.com/youtube/v3/channels?part=statistics&id=${channelId}&key=${apiKey}`);
+                const data = await res.json();
+                if(data.items && data.items.length > 0) {
+                    const subscriberCount = data.items[0].statistics.subscriberCount;
+                    subscriberDiv.textContent = subscriberCount;
+                } else {
+                    subscriberDiv.textContent = "Channel not found";
+                }
+            } catch (error) {
+                subscriberDiv.textContent = "Error fetching count";
+                console.error(error);
+            }
+        }
+
+        getSubscriberCount();
+    </script>
+</body>
+</html>
