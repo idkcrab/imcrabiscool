@@ -3,45 +3,86 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>imcrab Subscriber Count</title>
+    <title>Live Subscriber Count</title>
     <style>
         body {
-            background-color: black;
-            color: white;
+            margin: 0;
+            height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            font-size: 5rem;
+            background-color: black;
+            color: white;
             font-family: Arial, sans-serif;
+            font-size: 5rem;
+            overflow: hidden;
+        }
+
+        #subscriber-count {
+            position: relative;
+            display: inline-block;
+            white-space: nowrap;
+        }
+
+        .digit {
+            display: inline-block;
+            transform: translateY(100%);
+            animation: slide-up 0.5s forwards;
+        }
+
+        @keyframes slide-up {
+            0% {
+                transform: translateY(100%);
+                opacity: 0;
+            }
+
+            100% {
+                transform: translateY(0);
+                opacity: 1;
+            }
         }
     </style>
 </head>
 <body>
-    <div id="subscriber-count">Loading...</div>
+    <div id="subscriber-count">0</div>
 
     <script>
-        const apiKey = "AIzaSyDtfhqzZU3Ob_Q1C1MaDJhoQTHo2Nl31Xg"; // <-- Replace with your YouTube Data API v3 key
-        const channelId = "UCvioLqKnp-cychVIYHgOG3Q"; // Channel ID of @imcrab
-        const subscriberDiv = document.getElementById("subscriber-count");
+        const apiKey = "AIzaSyDtfhqzZU3Ob_Q1C1MaDJhoQTHo2Nl31Xg";
+        const channelId = "UCvioLqKnp-cychVIYHgOG3Q";
+        const countEl = document.getElementById("subscriber-count");
 
-        async function getSubscriberCount() {
+        async function fetchSubscriberCount() {
             try {
-                const res = await fetch(`https://www.googleapis.com/youtube/v3/channels?part=statistics&id=${channelId}&key=${apiKey}`);
-                const data = await res.json();
-                if(data.items && data.items.length > 0) {
-                    const subscriberCount = data.items[0].statistics.subscriberCount;
-                    subscriberDiv.textContent = subscriberCount;
-                } else {
-                    subscriberDiv.textContent = "Channel not found";
-                }
+                const response = await fetch(`https://www.googleapis.com/youtube/v3/channels?part=statistics&id=${channelId}&key=${apiKey}`);
+                const data = await response.json();
+                const subs = data.items[0].statistics.subscriberCount;
+
+                // Animate digits
+                updateDigits(subs);
             } catch (error) {
-                subscriberDiv.textContent = "Error fetching count";
-                console.error(error);
+                console.error("Error fetching subscriber count:", error);
             }
         }
 
-        getSubscriberCount();
+        function updateDigits(count) {
+            const newDigits = count.toString().split('');
+            const currentDigits = countEl.textContent.split('');
+
+            // Only update if digits change
+            if (countEl.textContent !== count) {
+                countEl.innerHTML = "";
+                newDigits.forEach(d => {
+                    const span = document.createElement("span");
+                    span.textContent = d;
+                    span.classList.add("digit");
+                    countEl.appendChild(span);
+                });
+            }
+        }
+
+        // Fetch every 2 seconds for live update
+        fetchSubscriberCount();
+        setInterval(fetchSubscriberCount, 2000);
     </script>
 </body>
 </html>
