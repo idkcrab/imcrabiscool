@@ -1,0 +1,196 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Video Page Generator</title>
+    <style>
+        body {
+            font-family: system-ui,Segoe UI,Roboto,Arial;
+            max-width: 900px;
+            margin: 32px auto;
+            padding: 16px
+        }
+
+        input, button {
+            font-size: 16px;
+            padding: 8px;
+            margin-top: 8px
+        }
+
+        .row {
+            display: flex;
+            gap: 12px;
+            align-items: center
+        }
+
+        video {
+            max-width: 100%;
+            margin-top: 12px
+        }
+
+        textarea {
+            width: 100%;
+            height: 160px
+        }
+
+        .hint {
+            color: #666;
+            font-size: 14px;
+            margin-top: 8px
+        }
+    </style>
+</head>
+<body>
+    <h1>Make a shareable video page (HTML-only)</h1>
+    <p class="hint">Pick a video file. The page will create a thumbnail and produce a standalone HTML file you can upload to your host along with the video and thumbnail.</p>
+
+    <input id="videoFile" type="file" accept="video/*" />
+    <div id="status"></div>
+
+    <div id="previewArea" style="display:none">
+        <h3>Preview</h3>
+        <video id="previewVideo" controls></video>
+        <p class="hint">Thumbnail preview (generated from the first non-blank frame):</p>
+        <canvas id="thumbCanvas" style="max-width:100%;border:1px solid #ddd"></canvas>
+        <div style="margin-top:12px;">
+            <button id="downloadThumb">Download thumbnail (png)</button>
+            <button id="downloadPage">Download video-page.html</button>
+        </div>
+        <p class="hint">After downloading: upload the original video file, the generated thumbnail (png), and the generated `video-page.html` to the same directory on your web host.</p>
+        <h4>Generated HTML preview (you can edit URLs after upload):</h4>
+        <textarea id="generatedHtml" readonly></textarea>
+    </div>
+
+    <script>
+const fileInput = document.getElementById('videoFile');
+const previewVideo = document.getElementById('previewVideo');
+const thumbCanvas = document.getElementById('thumbCanvas');
+const downloadThumb = document.getElementById('downloadThumb');
+const downloadPage = document.getElementById('downloadPage');
+const generatedHtml = document.getElementById('generatedHtml');
+const previewArea = document.getElementById('previewArea');
+const status = document.getElementById('status');
+
+function makeSafeFilename(name){
+  return name.replace(/\s+/g,'-').replace(/[^a-zA-Z0-9\-\_\.]/g,'').toLowerCase();
+}
+
+fileInput.addEventListener('change', async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  status.textContent = 'Loading video...';
+  const objectUrl = URL.createObjectURL(file);
+  previewVideo.src = objectUrl;
+  previewVideo.load();
+
+  // wait for metadata then seek to 0.5s (to avoid black frame)
+  await new Promise((res, rej) => {
+    previewVideo.onloadedmetadata = () => {
+      // prefer 0.5s or small fraction of duration
+      const t = Math.min(0.5, Math.max(0.0, previewVideo.duration * 0.05));
+      previewVideo.currentTime = t;
+      // if seeking fails, fallback after a delay
+      setTimeout(res, 700);
+    };
+    previewVideo.onerror = () => {
+      rej("Video load error");
+    }
+  });
+
+  // draw a frame to canvas
+  try {
+    thumbCanvas.width = Math.min(1280, previewVideo.videoWidth || 640);
+    thumbCanvas.height = Math.round(thumbCanvas.width * ((previewVideo.videoHeight||360)/(previewVideo.videoWidth||640)));
+    const ctx = thumbCanvas.getContext('2d');
+    ctx.drawImage(previewVideo, 0, 0, thumbCanvas.width, thumbCanvas.height);
+  } catch(err){
+    console.warn('frame draw failed', err);
+  }
+
+  const safeName = makeSafeFilename(file.name);
+  const pageFilename = safeName + '-page.html';
+  const thumbFilename = safeName + '-thumb.png';
+  const videoFilename = safeName; // when uploading, keep original name
+
+  // default metadata - user can edit after hosting
+  const title = safeName.replace(/[-_\.]/g,' ');
+  const description = `Watch ${title}`;
+
+  // Note: The generated HTML uses *relative* URLs for video and thumbnail:
+  // - <video src="MYVIDEO.mp4"> and og:image -> MYTHUMB.png
+  // After you upload to your host, if you want perfect Discord embeds, edit the meta tags og:url and og:image to absolute URLs (https://yourdomain/...).
+  const pageHtml = `<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>${escapeHtml(title)}</title>
+
+  <!-- OpenGraph meta: replace the og:url and og:image values with ABSOLUTE URLs after uploading for best Discord preview -->
+  <meta property="og:title" content="${escapeHtml(title)}" />
+  <meta property="og:description" content="${escapeHtml(description)}" />
+  <meta property="og:type" content="video.other" />
+  <meta property="og:video" content="${escapeHtml(videoFilename)}" />
+  <meta property="og:video:type" content="video/mp4" />
+  <meta property="og:image" content="${escapeHtml(thumbFilename)}" />
+  <!-- Replace og:url with the full URL to this page on your host (e.g. https://example.com/videos/${pageFilename}) -->
+  <meta property="og:url" content="${escapeHtml(pageFilename)}" />
+
+  <meta name="twitter:card" content="player" />
+  <style>
+    body{font-family:system-ui,Segoe UI,Roboto,Arial;background:#0f1720;color:#e6eef8;padding:28px}
+    .card{max-width:900px;margin:0 auto;background:#071129;padding:20px;border-radius:12px}
+    h1{margin:0 0 12px}
+    video{width:100%;height:auto;border-radius:8px;box-shadow:0 6px 30px rgba(0,0,0,0.6)}
+    .meta{color:#9fb2c9;margin-top:8px}
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>${escapeHtml(title)}</h1>
+    <p class="meta">${escapeHtml(description)}</p>
+
+    <video controls playsinline preload="metadata">
+      <source src="${escapeHtml(videoFilename)}" type="video/mp4" />
+      Your browser doesn't support HTML5 video.
+    </video>
+
+    <p style="margin-top:12px;color:#9fb2c9">Share this link to show a preview in Discord once hosted (replace the OG URLs with absolute paths for best results).</p>
+  </div>
+</body>
+</html>`;
+
+  generatedHtml.value = pageHtml;
+  previewArea.style.display = 'block';
+  status.textContent = 'Ready — download files and upload them together to a static host.';
+
+  // make thumbnail blob from canvas
+  thumbCanvas.toBlob((blob) => {
+    thumbBlob = blob;
+    // create download link for thumbnail
+    downloadThumb.onclick = () => {
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = thumbFilename;
+      a.click();
+    };
+  }, 'image/png');
+
+  // download generated HTML
+  downloadPage.onclick = () => {
+    const a = document.createElement('a');
+    const blob = new Blob([pageHtml], {type:'text/html'});
+    a.href = URL.createObjectURL(blob);
+    a.download = pageFilename;
+    a.click();
+  };
+
+});
+
+// small helper to escape text into HTML
+function escapeHtml(s){
+  return (s+'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+               .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+    </script>
+</body>
+</html>
