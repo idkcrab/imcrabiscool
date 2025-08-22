@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Discord Bot Runner</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #36393f, #2f3136);
+            color: #fff;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            color: #7289da;
+        }
+        
+        .subtitle {
+            color: #b9bbbe;
+            font-size: 1.2rem;
+        }
+        
+        .panel {
+            background: rgba(40, 42, 46, 0.8);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .panel-title {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: #7289da;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+        
+        input[type="password"] {
+            width: 100%;
+            padding: 12px;
+            border-radius: 5px;
+            border: 1px solid #202225;
+            background: #2f3136;
+            color: #fff;
+            font-size: 1rem;
+            margin-bottom: 15px;
+        }
+        
+        textarea {
+            width: 100%;
+            height: 300px;
+            padding: 15px;
+            border-radius: 5px;
+            border: 1px solid #202225;
+            background: #2f3136;
+            color: #fff;
+            font-family: monospace;
+            font-size: 14px;
+            resize: vertical;
+            margin-bottom: 15px;
+        }
+        
+        button {
+            background: #7289da;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 5px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+            margin-right: 10px;
+        }
+        
+        button:hover {
+            background: #677bc4;
+        }
+        
+        button:disabled {
+            background: #4f545c;
+            cursor: not-allowed;
+        }
+        
+        .status {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            display: none;
+        }
+        
+        .status.online {
+            background: rgba(67, 181, 129, 0.2);
+            border: 1px solid #43b581;
+            display: block;
+        }
+        
+        .status.offline {
+            background: rgba(240, 71, 71, 0.2);
+            border: 1px solid #f04747;
+            display: block;
+        }
+        
+        .logs {
+            background: #2f3136;
+            border-radius: 5px;
+            padding: 15px;
+            height: 200px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 14px;
+            margin-top: 20px;
+        }
+        
+        .log-entry {
+            margin-bottom: 5px;
+            padding: 5px;
+            border-bottom: 1px solid #40444b;
+        }
+        
+        .log-time {
+            color: #72767d;
+            margin-right: 10px;
+        }
+        
+        .log-info {
+            color: #43b581;
+        }
+        
+        .log-error {
+            color: #f04747;
+        }
+        
+        .log-warning {
+            color: #faa61a;
+        }
+        
+        .instructions {
+            margin-top: 30px;
+            line-height: 1.6;
+        }
+        
+        .instructions h3 {
+            margin-bottom: 10px;
+            color: #7289da;
+        }
+        
+        .instructions ul {
+            margin-left: 20px;
+            margin-bottom: 15px;
+        }
+        
+        .instructions li {
+            margin-bottom: 8px;
+        }
+        
+        .instructions code {
+            background: #2f3136;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-family: monospace;
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: 10px;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            textarea {
+                height: 200px;
+            }
+            
+            .btn-group {
+                flex-direction: column;
+            }
+            
+            button {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Discord Bot Runner</h1>
+            <p class="subtitle">Run your Discord bot directly from the browser</p>
+        </header>
+        
+        <div class="panel">
+            <h2 class="panel-title">Bot Configuration</h2>
+            <label for="token">Discord Bot Token:</label>
+            <input type="password" id="token" placeholder="Enter your bot token here">
+            
+            <label for="code">Bot Code:</label>
+            <textarea id="code" placeholder="Paste your Discord bot code here">// Example bot code using Discord.js
+const { Client, GatewayIntentBits } = require('discord.js');
+const client = new Client({
+    intents: [
+        GatewayIntentBits.Guilds,
+        GatewayIntentBits.GuildMessages,
+        GatewayIntentBits.MessageContent
+    ]
+});
+
+client.on('ready', () => {
+    console.log(`Logged in as ${client.user.tag}!`);
+    console.log('Bot is ready!');
+});
+
+client.on('messageCreate', msg => {
+    if (msg.author.bot) return;
+    
+    if (msg.content === 'ping') {
+        msg.reply('pong');
+        console.log('Responded to ping command');
+    }
+    
+    if (msg.content === 'hello') {
+        msg.reply('Hello there!');
+        console.log('Responded to hello command');
+    }
+});
+
+// Don't call client.login() here - the app will handle it</textarea>
+        </div>
+        
+        <div class="btn-group">
+            <button id="run-btn">RUN BOT</button>
+            <button id="stop-btn" disabled>STOP BOT</button>
+            <button id="clear-btn">CLEAR LOGS</button>
+        </div>
+        
+        <div id="status" class="status offline">
+            Bot is currently offline
+        </div>
+        
+        <div class="panel">
+            <h2 class="panel-title">Logs</h2>
+            <div class="logs" id="logs">
+                <div class="log-entry"><span class="log-time">[00:00:00]</span> <span class="log-info">System ready. Enter your token and code, then press RUN BOT.</span></div>
+            </div>
+        </div>
+        
+        <div class="instructions">
+            <h3>How to use:</h3>
+            <ul>
+                <li>Create a Discord bot at the <a href="https://discord.com/developers/applications" target="_blank" style="color: #7289da;">Discord Developer Portal</a></li>
+                <li>Copy your bot token and paste it in the token field</li>
+                <li>Write or paste your bot code in the code area (basic example provided)</li>
+                <li>Click RUN BOT to start your bot</li>
+                <li>Check the logs section for output and errors</li>
+            </ul>
+            
+            <h3>Important Notes:</h3>
+            <ul>
+                <li>This implementation runs in your browser using a service worker proxy</li>
+                <li>For security, avoid using this on public computers as your bot token could be compromised</li>
+                <li>Some advanced Discord.js features may not work in the browser environment</li>
+                <li>For production use, consider running your bot on a proper server</li>
+            </ul>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/erela.js-discord.js@1.0.8/dist/discord.js.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const tokenInput = document.getElementById('token');
+            const codeTextarea = document.getElementById('code');
+            const runBtn = document.getElementById('run-btn');
+            const stopBtn = document.getElementById('stop-btn');
+            const clearBtn = document.getElementById('clear-btn');
+            const statusDiv = document.getElementById('status');
+            const logsDiv = document.getElementById('logs');
+            
+            let botRunning = false;
+            let botClient = null;
+            
+            // Function to add log entries
+            function addLog(message, type = 'info') {
+                const now = new Date();
+                const timeString = `[${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}]`;
+                
+                const logEntry = document.createElement('div');
+                logEntry.className = 'log-entry';
+                
+                const timeSpan = document.createElement('span');
+                timeSpan.className = 'log-time';
+                timeSpan.textContent = timeString;
+                
+                const messageSpan = document.createElement('span');
+                messageSpan.className = `log-${type}`;
+                messageSpan.textContent = message;
+                
+                logEntry.appendChild(timeSpan);
+                logEntry.appendChild(messageSpan);
+                
+                logsDiv.appendChild(logEntry);
+                logsDiv.scrollTop = logsDiv.scrollHeight;
+            }
+            
+            // Function to run the bot
+            async function runBot() {
+                const token = tokenInput.value.trim();
+                const code = codeTextarea.value.trim();
+                
+                if (!token) {
+                    addLog('Please enter a bot token', 'error');
+                    return;
+                }
+                
+                if (!code) {
+                    addLog('Please enter bot code', 'error');
+                    return;
+                }
+                
+                addLog('Starting bot...', 'info');
+                botRunning = true;
+                updateUI();
+                
+                try {
+                    // Create a modified version of the user's code
+                    const modifiedCode = code
+                        .replace(/client\.login\([^)]*\);/g, '')
+                        .replace(/client\.login\([^)]*\)\s*;?/g, '');
+                    
+                    // Create a function from the user's code
+                    const botFunction = new Function('client', 'console', 'require', `
+                        try {
+                            ${modifiedCode}
+                        } catch (error) {
+                            console.log('Error in bot code: ' + error.message);
+                        }
+                    `);
+                    
+                    // Create a custom console for logging
+                    const customConsole = {
+                        log: (message) => addLog(message, 'info'),
+                        error: (message) => addLog(message, 'error'),
+                        warn: (message) => addLog(message, 'warning')
+                    };
+                    
+                    // Create a custom require function
+                    function customRequire(module) {
+                        if (module === 'discord.js') {
+                            return Discord;
+                        }
+                        throw new Error(`Module ${module} not available in browser`);
+                    }
+                    
+                    // Create Discord.js client
+                    botClient = new Discord.Client({
+                        intents: [
+                            Discord.GatewayIntentBits.Guilds,
+                            Discord.GatewayIntentBits.GuildMessages,
+                            Discord.GatewayIntentBits.MessageContent
+                        ]
+                    });
+                    
+                    // Apply the user's code to our client
+                    botFunction(botClient, customConsole, customRequire);
+                    
+                    // Set up error handling
+                    botClient.on('error', (error) => {
+                        addLog(`Client error: ${error.message}`, 'error');
+                    });
+                    
+                    // Login to Discord
+                    await botClient.login(token);
+                    
+                    statusDiv.textContent = 'Bot is online!';
+                    statusDiv.className = 'status online';
+                    addLog('Bot connected to Discord', 'info');
+                    
+                } catch (error) {
+                    addLog(`Error starting bot: ${error.message}`, 'error');
+                    botRunning = false;
+                    updateUI();
+                }
+            }
+            
+            // Function to stop the bot
+            async function stopBot() {
+                addLog('Stopping bot...', 'info');
+                
+                if (botClient) {
+                    try {
+                        botClient.destroy();
+                        addLog('Bot disconnected', 'info');
+                    } catch (error) {
+                        addLog(`Error stopping bot: ${error.message}`, 'error');
+                    }
+                }
+                
+                botRunning = false;
+                botClient = null;
+                statusDiv.textContent = 'Bot is offline';
+                statusDiv.className = 'status offline';
+                updateUI();
+            }
+            
+            // Function to clear logs
+            function clearLogs() {
+                logsDiv.innerHTML = '';
+                addLog('Logs cleared', 'info');
+            }
+            
+            // Update UI based on bot state
+            function updateUI() {
+                runBtn.disabled = botRunning;
+                stopBtn.disabled = !botRunning;
+                
+                if (botRunning) {
+                    runBtn.textContent = 'RUNNING...';
+                } else {
+                    runBtn.textContent = 'RUN BOT';
+                }
+            }
+            
+            // Event listeners
+            runBtn.addEventListener('click', runBot);
+            stopBtn.addEventListener('click', stopBot);
+            clearBtn.addEventListener('click', clearLogs);
+            
+            // Initial UI update
+            updateUI();
+            
+            // Add sample token format hint
+            tokenInput.addEventListener('focus', function() {
+                addLog('Tip: Your token should look like: NDE4NzQ2ODU0NTcxNDIyNTY0.DXwCqg.abcdef123456', 'info');
+            });
+        });
+    </script>
+</body>
+</html>
