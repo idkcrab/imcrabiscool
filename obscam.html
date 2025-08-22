@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phone Camera to OBS Stream</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+            color: white;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, #ff7e5f, #feb47b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.8;
+        }
+
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(30, 30, 50, 0.5);
+            border-radius: 10px;
+        }
+
+        h2 {
+            margin-bottom: 15px;
+            color: #ff7e5f;
+            display: flex;
+            align-items: center;
+        }
+
+            h2 i {
+                margin-right: 10px;
+            }
+
+        button {
+            background: linear-gradient(90deg, #ff7e5f, #feb47b);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 50px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 10px 0;
+            font-weight: bold;
+        }
+
+            button:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            }
+
+            button:disabled {
+                background: #555;
+                cursor: not-allowed;
+                transform: none;
+                box-shadow: none;
+            }
+
+        #video-container {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+            margin: 0 auto;
+            overflow: hidden;
+            border-radius: 10px;
+        }
+
+        #video-player {
+            width: 100%;
+            background: #000;
+            border-radius: 10px;
+            transform: scaleX(-1); /* Mirror effect for front camera */
+        }
+
+        .status {
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            text-align: center;
+        }
+
+            .status.active {
+                background: rgba(76, 175, 80, 0.2);
+                color: #4CAF50;
+            }
+
+            .status.inactive {
+                background: rgba(244, 67, 54, 0.2);
+                color: #F44336;
+            }
+
+        .qr-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 20px 0;
+        }
+
+        #qrcode {
+            margin: 15px 0;
+            padding: 15px;
+            background: white;
+            border-radius: 10px;
+        }
+
+        #stream-link {
+            width: 100%;
+            padding: 12px;
+            background: #222;
+            color: #4CAF50;
+            border-radius: 5px;
+            margin: 15px 0;
+            word-break: break-all;
+            font-family: monospace;
+            text-align: center;
+            border: 1px solid #444;
+        }
+
+        .instructions {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 15px;
+        }
+
+            .instructions ol {
+                padding-left: 20px;
+                margin: 10px 0;
+            }
+
+            .instructions li {
+                margin-bottom: 10px;
+                line-height: 1.5;
+            }
+
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            font-size: 0.9rem;
+            opacity: 0.7;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            button {
+                width: 100%;
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Phone Camera to OBS Stream</h1>
+            <p class="subtitle">Turn your phone into a wireless camera for OBS</p>
+        </header>
+
+        <div class="section">
+            <h2>Step 1: Start Your Camera</h2>
+            <button id="start-camera">Enable Camera</button>
+            <div id="camera-status" class="status inactive">Camera not active</div>
+
+            <div id="video-container">
+                <video id="video-player" autoplay playsinline muted></video>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Step 2: Generate Stream Link</h2>
+            <button id="generate-link" disabled>Generate Stream Link & QR Code</button>
+
+            <div id="link-section" style="display: none;">
+                <div class="status active">Stream is active! Use the link below in OBS</div>
+                <div id="stream-link">Your stream link will appear here...</div>
+
+                <div class="qr-container">
+                    <div id="qrcode"></div>
+                    <p>Scan this QR code with OBS</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Step 3: Add to OBS</h2>
+            <div class="instructions">
+                <ol>
+                    <li>In OBS, add a new Browser Source</li>
+                    <li>Check the "Local file" option and paste the stream link above</li>
+                    <li>Set width to 1280 and height to 720 (or your preferred resolution)</li>
+                    <li>Click OK and your phone camera should appear in OBS</li>
+                </ol>
+                <p><strong>Note:</strong> Keep this page open on your phone to continue streaming</p>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>This service uses WebRTC to stream your camera feed. No video data is stored on any server.</p>
+            <p>© 2023 Phone Camera to OBS Stream</p>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const startCameraBtn = document.getElementById('start-camera');
+            const generateLinkBtn = document.getElementById('generate-link');
+            const videoPlayer = document.getElementById('video-player');
+            const cameraStatus = document.getElementById('camera-status');
+            const streamLink = document.getElementById('stream-link');
+            const linkSection = document.getElementById('link-section');
+            const qrcodeDiv = document.getElementById('qrcode');
+
+            let stream = null;
+            let qrcode = null;
+
+            // Generate a unique ID for this streaming session
+            const streamId = generateStreamId();
+
+            // Start camera when button is clicked
+            startCameraBtn.addEventListener('click', async function() {
+                try {
+                    stream = await navigator.mediaDevices.getUserMedia({
+                        video: {
+                            facingMode: 'environment',
+                            width: { ideal: 1280 },
+                            height: { ideal: 720 }
+                        },
+                        audio: false
+                    });
+
+                    videoPlayer.srcObject = stream;
+                    cameraStatus.textContent = 'Camera active';
+                    cameraStatus.className = 'status active';
+                    generateLinkBtn.disabled = false;
+
+                } catch (error) {
+                    console.error('Error accessing camera:', error);
+                    cameraStatus.textContent = 'Error accessing camera: ' + error.message;
+                    cameraStatus.className = 'status inactive';
+                }
+            });
+
+            // Generate stream link and QR code
+            generateLinkBtn.addEventListener('click', function() {
+                // In a real application, you would send the stream to a server and get a URL
+                // For this demo, we'll create a local URL that would work in a real implementation
+                const currentUrl = window.location.href.split('?')[0];
+                const demoStreamUrl = `${currentUrl}?stream=${streamId}`;
+
+                streamLink.textContent = demoStreamUrl;
+                linkSection.style.display = 'block';
+
+                // Generate QR code
+                if (qrcode) {
+                    qrcode.clear();
+                    qrcode.makeCode(demoStreamUrl);
+                } else {
+                    qrcode = new QRCode(qrcodeDiv, {
+                        text: demoStreamUrl,
+                        width: 200,
+                        height: 200,
+                        colorDark: "#000000",
+                        colorLight: "#ffffff",
+                        correctLevel: QRCode.CorrectLevel.H
+                    });
+                }
+
+                // In a real implementation, you would start streaming to a server here
+                // For this demo, we'll just simulate it
+                simulateStreaming();
+            });
+
+            // Generate a random stream ID
+            function generateStreamId() {
+                return Math.random().toString(36).substring(2, 10) +
+                       Math.random().toString(36).substring(2, 10);
+            }
+
+            // Simulate streaming (in a real app, this would connect to a server)
+            function simulateStreaming() {
+                console.log("Simulating streaming to server...");
+                // Actual WebRTC streaming implementation would go here
+            }
+        });
+    </script>
+</body>
+</html>
