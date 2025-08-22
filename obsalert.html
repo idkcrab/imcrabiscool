@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subscriber Alert</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: transparent; /* Make it transparent for OBS */
+            overflow: hidden;
+        }
+
+        #alert {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            background: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            z-index: 9999;
+            transition: transform 0.5s ease;
+        }
+
+            #alert.show {
+                transform: translate(-50%, -50%) scale(1);
+            }
+
+            #alert img {
+                width: 150px;
+                height: 150px;
+                display: block;
+                margin: 0 auto 10px auto;
+            }
+
+            #alert h2 {
+                margin: 0;
+                font-size: 24px;
+                color: #333;
+            }
+    </style>
+</head>
+<body>
+
+    <div id="alert">
+        <img src="assets/poop.png" alt="Subscriber Image">
+        <h2 id="subscriberName">Subscriber Name</h2>
+    </div>
+
+    <audio id="alertSound" src="assets/vine.mp3"></audio>
+
+    <script>
+  // Function to trigger the subscriber alert
+  function onSubscribe(name) {
+    const alertBox = document.getElementById('alert');
+    const subscriberName = document.getElementById('subscriberName');
+    const sound = document.getElementById('alertSound');
+
+    subscriberName.textContent = name;
+    alertBox.classList.add('show');
+    sound.currentTime = 0;
+    sound.play();
+
+    // Hide alert after 3 seconds
+    setTimeout(() => {
+      alertBox.classList.remove('show');
+    }, 3000);
+  }
+
+  // TEST: simulate a subscription after 2 seconds
+  setTimeout(() => {
+    onSubscribe("TestSubscriber");
+  }, 2000);
+
+  // OPTIONAL: Listen for custom events from OBS or browser source
+  window.addEventListener("message", (event) => {
+    if (event.data.type === "new-subscriber") {
+      onSubscribe(event.data.name);
+    }
+  });
+    </script>
+
+</body>
+</html>
