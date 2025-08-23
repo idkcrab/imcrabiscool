@@ -1,83 +1,74 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>YouTube Sub Alert</title>
-  <style>
-    body {
-      margin: 0;
-      background: black;
-      color: white;
-      font-family: Arial, sans-serif;
-      overflow: hidden;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube Sub Alert</title>
+    <style>
+        body {
+            margin: 0;
+            background: black;
+            color: white;
+            font-family: Arial, sans-serif;
+            overflow: hidden;
+        }
 
-    #alert {
-      position: absolute;
-      top: 40%;
-      width: 100%;
-      text-align: center;
-      font-size: 3em;
-      opacity: 0;
-      transition: opacity 0.5s;
-    }
-
-    #alert img {
-      display: block;
-      margin: 0 auto;
-      max-width: 300px;
-    }
-  </style>
+        #alert {
+            position: absolute;
+            top: 40%;
+            width: 100%;
+            text-align: center;
+            font-size: 3em;
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+    </style>
 </head>
 <body>
 
-  <div id="alert">
-    <img src="assets/poop.png" alt="Poop Alert">
-    <div>New Subscriber!</div>
-  </div>
-  <audio id="subSound" src="assets/vine.mp3"></audio>
+    <div id="alert">new sub!!!!!!!!</div>
+    <audio id="subSound" src="assets/autosubs-exported-audio.mp3"></audio>
 
-  <script>
+    <script>
 const API_KEY = "AIzaSyDtfhqzZU3Ob_Q1C1MaDJhoQTHo2Nl31Xg";
 const CHANNEL_ID = "UCvioLqKnp-cychVIYHgOG3Q";
 const ALERT_DURATION = 3000; // 3 seconds
 let lastCount = 0;
 
 async function fetchSubscriberCount() {
-  const url = `https://www.googleapis.com/youtube/v3/channels?part=statistics&id=${CHANNEL_ID}&key=${API_KEY}`;
-  try {
-    const response = await fetch(url);
-    const data = await response.json();
-    const count = parseInt(data.items[0].statistics.subscriberCount);
+    const url = `https://www.googleapis.com/youtube/v3/channels?part=statistics&id=${CHANNEL_ID}&key=${API_KEY}`;
+    try {
+        const response = await fetch(url);
+        const data = await response.json();
+        const count = parseInt(data.items[0].statistics.subscriberCount);
 
-    if (lastCount && count > lastCount) {
-      triggerAlert();
+        if (lastCount && count > lastCount) {
+            triggerAlert();
+        }
+
+        lastCount = count;
+    } catch (error) {
+        console.error("Error fetching subscriber count:", error);
     }
-
-    lastCount = count;
-  } catch (error) {
-    console.error("Error fetching subscriber count:", error);
-  }
 }
 
 function triggerAlert() {
-  const alertDiv = document.getElementById("alert");
-  const sound = document.getElementById("subSound");
+    const alertDiv = document.getElementById("alert");
+    const sound = document.getElementById("subSound");
 
-  alertDiv.style.opacity = 1;
-  sound.currentTime = 0;
-  sound.play();
+    alertDiv.style.opacity = 1;
+    sound.currentTime = 0;
+    sound.play();
 
-  setTimeout(() => {
-    alertDiv.style.opacity = 0;
-  }, ALERT_DURATION);
+    setTimeout(() => {
+        alertDiv.style.opacity = 0;
+    }, ALERT_DURATION);
 }
 
 // Poll every 10 seconds
 setInterval(fetchSubscriberCount, 10000);
 fetchSubscriberCount(); // Initial check
-  </script>
+    </script>
 
 </body>
 </html>
