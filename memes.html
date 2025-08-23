@@ -3,14 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Button Links</title>
+
+    <title>Image Viewer</title>
+
+    <!-- Open Graph Meta Tags (dynamic) -->
+    <meta id="og-title" property="og:title" content="">
+    <meta id="og-description" property="og:description" content="">
+    <meta id="og-image" property="og:image" content="">
+    <meta property="og:type" content="website">
+
     <style>
         body {
             font-family: Arial, sans-serif;
             background-color: #f0f0f0;
             display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
+            flex-direction: column;
+            align-items: center;
             padding: 50px;
         }
 
@@ -29,21 +37,46 @@
             .button:hover {
                 background-color: #45a049;
             }
+
+        img {
+            margin-top: 30px;
+            max-width: 80%;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.3);
+        }
     </style>
 </head>
 <body>
 
+    <div id="buttons"></div>
+    <img id="mainImage" src="" alt="">
+
     <script>
-    const container = document.body;
-    for (let i = 1; i <= 18; i++) {
-        const btn = document.createElement('button');
-        btn.className = 'button';
-        btn.textContent = i;
-        btn.onclick = () => {
-            window.location.href = `http://imcrab.online/asd/${i}`;
-        };
-        container.appendChild(btn);
-    }
+        // Get image number from URL query, e.g., ?img=3
+        const params = new URLSearchParams(window.location.search);
+        let imgNumber = parseInt(params.get('img')) || 1;
+
+        // Set the main image
+        const mainImage = document.getElementById('mainImage');
+        mainImage.src = `assets/${imgNumber}.png`;
+        mainImage.alt = `Image ${imgNumber}`;
+
+        // Set OG meta tags dynamically
+        document.getElementById('og-title').content = `Image ${imgNumber}`;
+        document.getElementById('og-description').content = `Check out Image ${imgNumber}`;
+        document.getElementById('og-image').content = `http://imcrab.online/asd${imgNumber}.png`;
+
+        // Create buttons
+        const container = document.getElementById('buttons');
+        for (let i = 1; i <= 18; i++) {
+            const btn = document.createElement('button');
+            btn.className = 'button';
+            btn.textContent = i;
+            btn.onclick = () => {
+                window.location.href = `?img=${i}`;
+            };
+            container.appendChild(btn);
+        }
     </script>
 
 </body>
