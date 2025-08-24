@@ -1,3 +1,5 @@
+<!DOCTYPE html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -131,3 +133,59 @@
         }
     </style>
 </head>
+<body>
+    <section class="hero">
+        <h1>crab is crab 👍</h1>
+        <p>i make videos</p>
+        <div>
+            <a href="https://www.youtube.com/channel/UCvioLqKnp-cychVIYHgOG3Q?sub_confirmation=1" class="btn btn-primary"><i class="fab fa-youtube"></i> Subscribe</a>
+            <a href="https://www.tiktok.com/@imcrab.bread" class="btn btn-secondary"><i class="fab fa-tiktok"></i> Follow</a>
+        </div>
+    </section>
+
+    <section id="videos">
+        <h2 class="section-title">Latest Videos</h2>
+        <div class="video-grid" id="video-grid">
+            <!-- Videos load here -->
+        </div>
+    </section>
+
+    <footer>
+        <p>hey you should subscribe</p>
+    </footer>
+
+    <script>
+        const API_KEY = "AIzaSyDtfhqzZU3Ob_Q1C1MaDJhoQTHo2Nl31Xg";
+        const CHANNEL_ID = "UCvioLqKnp-cychVIYHgOG3Q";
+        const MAX_RESULTS = 2;
+
+        async function loadVideos() {
+            const channelRes = await fetch(`https://www.googleapis.com/youtube/v3/channels?part=contentDetails&id=${CHANNEL_ID}&key=${API_KEY}`);
+            const channelData = await channelRes.json();
+            const uploadsPlaylistId = channelData.items[0].contentDetails.relatedPlaylists.uploads;
+
+            const res = await fetch(`https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=${MAX_RESULTS}&playlistId=${uploadsPlaylistId}&key=${API_KEY}`);
+            const data = await res.json();
+
+            const grid = document.getElementById("video-grid");
+            grid.innerHTML = "";
+            data.items.forEach(item => {
+                const vid = item.snippet.resourceId.videoId;
+                const title = item.snippet.title;
+                const thumb = item.snippet.thumbnails.high.url;
+                const desc = item.snippet.description.substring(0, 100) + "...";
+                grid.innerHTML += `
+              <a class="video-card" href="https://www.youtube.com/watch?v=${vid}" target="_blank">
+                <div class="video-thumb"><img src="${thumb}" alt="${title}"></div>
+                <div class="video-info">
+                  <h3>${title}</h3>
+                  <p>${desc}</p>
+                </div>
+              </a>
+            `;
+            });
+        }
+        loadVideos();
+    </script>
+</body>
+</html>
