@@ -1,4 +1,4 @@
-﻿﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -24,10 +24,27 @@
     }
     * { margin:0; padding:0; box-sizing:border-box; font-family:'Inter', sans-serif; }
     body { background:var(--bg); color:var(--text); }
+
     .hero {
       text-align:center;
       padding:120px 20px;
+      background: url("assets/topbar.png") no-repeat center center/cover;
+      position: relative;
     }
+
+    /* Optional overlay to make text stand out */
+    .hero::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.5);
+    }
+
+    .hero * {
+      position: relative;
+      z-index: 1;
+    }
+
     .hero h1 {
       font-size:3rem;
       color:#ffffff;
@@ -128,4 +145,3 @@
   </script>
 </body>
 </html>
-
