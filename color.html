@@ -1,0 +1,274 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Gorilla Tag Color Code Converter</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0b0d12;
+            --panel: #141722;
+            --text: #e9eef6;
+            --muted: #7f8a9a;
+            --accent: #6ec7ff;
+            --accent-hover: #52b0ff;
+            --radius: 20px;
+            --shadow: 0 8px 24px rgba(0,0,0,0.6);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Inter,system-ui,sans-serif;
+            background: linear-gradient(180deg,#0a0d12,#0f1320);
+            color: var(--text);
+        }
+
+        .wrap {
+            max-width: 600px;
+            margin: 40px auto;
+            padding: 20px;
+        }
+
+        h1 {
+            font-size: clamp(24px,4vw,36px);
+            margin-bottom: 10px;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+        }
+
+        p {
+            color: var(--muted);
+            margin-bottom: 20px;
+        }
+
+        .panel {
+            background: rgba(20,23,34,0.85);
+            backdrop-filter: blur(12px);
+            border-radius: var(--radius);
+            padding: 20px;
+            box-shadow: var(--shadow);
+        }
+
+        .grid {
+            display: grid;
+            gap: 20px;
+            grid-template-columns: 1fr;
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        label {
+            font-weight: 600;
+            font-size: 14px;
+            color: #c7d0df;
+        }
+
+        input[type="text"] {
+            background: rgba(30,34,48,0.8);
+            border: none;
+            border-radius: 14px;
+            color: var(--text);
+            padding: 12px 14px;
+            font-size: 16px;
+            transition: 0.2s;
+        }
+
+            input[type="text"]:focus {
+                outline: none;
+                box-shadow: 0 0 0 2px var(--accent);
+            }
+
+        input[type="range"] {
+            width: 100%;
+            accent-color: var(--accent);
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(30,34,48,0.6);
+            border-radius: 999px;
+            padding: 6px 12px;
+            font-weight: 600;
+            font-size: 13px;
+        }
+
+        .btn {
+            cursor: pointer;
+            border: none;
+            background: var(--accent);
+            color: var(--bg);
+            font-weight: 800;
+            padding: 12px 18px;
+            border-radius: 14px;
+            transition: 0.2s;
+        }
+
+            .btn:hover {
+                background: var(--accent-hover);
+            }
+
+            .btn.ghost {
+                background: transparent;
+                color: var(--text);
+                border: 1px solid rgba(255,255,255,0.15);
+            }
+
+                .btn.ghost:hover {
+                    background: rgba(255,255,255,0.05);
+                }
+
+        .swatch {
+            width: 100%;
+            height: 150px;
+            border-radius: 16px;
+            border: 1px solid rgba(255,255,255,0.05);
+            box-shadow: inset 0 0 0 1px rgba(255,255,255,0.02);
+        }
+
+        .pair {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            margin-top: 12px;
+        }
+
+        .copy {
+            cursor: pointer;
+            font-size: 12px;
+            opacity: .85;
+            transition: 0.2s;
+        }
+
+            .copy:hover {
+                opacity: 1;
+                color: var(--accent);
+            }
+
+        .mono {
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="wrap">
+        <h1>Gorilla Tag Color Code Converter</h1>
+        <p>Enter a 3-digit GTAG code (0–9 per channel) or use the sliders to see the color instantly.</p>
+
+        <div class="panel">
+            <div class="field">
+                <label for="gtag">Quick input (R G B as three digits, e.g. <span class="mono">743</span>)</label>
+                <input id="gtag" type="text" inputmode="numeric" pattern="^[0-9]{1,3}$" placeholder="Enter 3 digits like 920" />
+            </div>
+
+            <div class="grid" style="margin-top:15px">
+                <div class="field">
+                    <label>R (0–9) <span class="badge"><span id="rDigit">0</span></span></label>
+                    <input type="range" id="r" min="0" max="9" step="1" value="0" />
+                </div>
+                <div class="field">
+                    <label>G (0–9) <span class="badge"><span id="gDigit">0</span></span></label>
+                    <input type="range" id="g" min="0" max="9" step="1" value="0" />
+                </div>
+                <div class="field">
+                    <label>B (0–9) <span class="badge"><span id="bDigit">0</span></span></label>
+                    <input type="range" id="b" min="0" max="9" step="1" value="0" />
+                </div>
+            </div>
+
+            <div class="pair" style="margin-top:15px">
+                <button class="btn" id="random">Random</button>
+                <button class="btn ghost" id="reset">Reset</button>
+            </div>
+
+            <div class="swatch" id="swatch" style="margin-top:20px;"></div>
+
+            <div class="pair"><div>GTAG Code</div><div class="mono" id="out-gtag">000</div></div>
+            <div class="pair"><div>RGB (0–255)</div><div class="mono" id="out-rgb">rgb(0,0,0)</div><span class="copy" data-copy="rgb">Copy</span></div>
+            <div class="pair"><div>HEX</div><div class="mono" id="out-hex">#000000</div><span class="copy" data-copy="hex">Copy</span></div>
+        </div>
+    </div>
+
+    <script>
+        const MAP = [0, 28, 57, 85, 113, 142, 170, 198, 227, 255];
+
+        const els = {
+            gtag: document.getElementById('gtag'),
+            r: document.getElementById('r'),
+            g: document.getElementById('g'),
+            b: document.getElementById('b'),
+            rD: document.getElementById('rDigit'),
+            gD: document.getElementById('gDigit'),
+            bD: document.getElementById('bDigit'),
+            swatch: document.getElementById('swatch'),
+            outGTAG: document.getElementById('out-gtag'),
+            outRGB: document.getElementById('out-rgb'),
+            outHEX: document.getElementById('out-hex')
+        };
+
+        const clampDigit = v => Math.max(0, Math.min(9, v | 0));
+        function digitsToRGB(rd, gd, bd) { return [MAP[rd], MAP[gd], MAP[bd]]; }
+        function rgbToHex(r, g, b) { return '#' + [r, g, b].map(x => x.toString(16).padStart(2, '0')).join('').toUpperCase(); }
+
+        function updateFromDigits() {
+            const rd = +els.r.value, gd = +els.g.value, bd = +els.b.value;
+            els.rD.textContent = rd; els.gD.textContent = gd; els.bD.textContent = bd;
+            const [r, g, b] = digitsToRGB(rd, gd, bd);
+            const hex = rgbToHex(r, g, b);
+            els.swatch.style.backgroundColor = `rgb(${r},${g},${b})`;
+            els.outGTAG.textContent = `${rd}${gd}${bd}`;
+            els.outRGB.textContent = `rgb(${r},${g},${b})`;
+            els.outHEX.textContent = hex;
+            els.gtag.value = `${rd}${gd}${bd}`;
+        }
+
+        function updateFromQuickInput() {
+            const v = (els.gtag.value || '').replace(/\D+/g, '').slice(0, 3);
+            if (!v.length) return;
+            const padded = (v + '000').slice(0, 3);
+            const [rd, gd, bd] = padded.split('').map(n => clampDigit(+n));
+            els.r.value = rd; els.g.value = gd; els.b.value = bd;
+            updateFromDigits();
+        }
+
+        document.getElementById('random').addEventListener('click', () => {
+            els.r.value = Math.floor(Math.random() * 10);
+            els.g.value = Math.floor(Math.random() * 10);
+            els.b.value = Math.floor(Math.random() * 10);
+            updateFromDigits();
+        });
+
+        document.getElementById('reset').addEventListener('click', () => {
+            els.r.value = 0; els.g.value = 0; els.b.value = 0; els.gtag.value = '000';
+            updateFromDigits();
+        });
+
+        els.r.addEventListener('input', updateFromDigits);
+        els.g.addEventListener('input', updateFromDigits);
+        els.b.addEventListener('input', updateFromDigits);
+        els.gtag.addEventListener('input', updateFromQuickInput);
+
+        document.querySelectorAll('.copy').forEach(btn => {
+            btn.addEventListener('click', async () => {
+                const type = btn.dataset.copy;
+                const text = type === 'hex' ? els.outHEX.textContent : els.outRGB.textContent;
+                try { await navigator.clipboard.writeText(text); btn.textContent = 'Copied!'; setTimeout(() => btn.textContent = 'Copy', 900); } catch (e) { btn.textContent = 'Error'; setTimeout(() => btn.textContent = 'Copy', 900); }
+            });
+        });
+
+        updateFromDigits();
+    </script>
+</body>
+</html>
