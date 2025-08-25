@@ -42,35 +42,42 @@
     <div id="latest">No messages yet</div>
 
     <script>
-    const bannedWords = ["fuck", "nigga", "gay"]; // customize this
-    const latest = document.getElementById("latest");
-    const error = document.getElementById("error");
+  const bannedWords = ["badword1", "badword2", "badword3"];
+  const latest = document.getElementById("latest");
+  const error = document.getElementById("error");
 
-    function sendMessage() {
-      error.textContent = "";
-      let name = document.getElementById("name").value.trim();
-      let msg = document.getElementById("message").value.trim();
+  function sendMessage() {
+    error.textContent = "";
+    let name = document.getElementById("name").value.trim();
+    let msg = document.getElementById("message").value.trim();
 
-      if (!name || !msg) {
-        error.textContent = "Please enter both name and message!";
-        return;
-      }
-
-      const lowerMsg = msg.toLowerCase();
-      if (bannedWords.some(word => lowerMsg.includes(word))) {
-        error.textContent = "Message contains banned words!";
-        return;
-      }
-
-      const fullMessage = `${name} said ${msg}`;
-      latest.textContent = fullMessage;
-
-      // Speak the message (TTS)
-      const utterance = new SpeechSynthesisUtterance(fullMessage);
-      speechSynthesis.speak(utterance);
-
-      document.getElementById("message").value = "";
+    if (!name || !msg) {
+      error.textContent = "Please enter both name and message!";
+      return;
     }
-    </script>
+
+    const lowerMsg = msg.toLowerCase();
+    if (bannedWords.some(word => lowerMsg.includes(word))) {
+      error.textContent = "Message contains banned words!";
+      return;
+    }
+
+    const fullMessage = `${name} said ${msg}`;
+    latest.textContent = fullMessage;
+
+    // Instead of speechSynthesis, generate an <audio> element OBS can play
+    fetch(`https://api.streamelements.com/kappa/v2/speech?voice=Brian&text=${encodeURIComponent(fullMessage)}`)
+      .then(res => res.blob())
+      .then(blob => {
+        const url = URL.createObjectURL(blob);
+        const audio = new Audio(url);
+        audio.play();
+      });
+
+    document.getElementById("message").value = "";
+  }
+</script>
+
 </body>
 </html>
+
