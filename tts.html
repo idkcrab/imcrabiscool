@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>OBS Chat Overlay with TTS</title>
+    <style>
+        body {
+            background: #111;
+            color: white;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 20px;
+        }
+
+        input, button {
+            padding: 10px;
+            margin: 5px;
+            font-size: 1rem;
+        }
+
+        #latest {
+            margin-top: 30px;
+            font-size: 2rem;
+            font-weight: bold;
+            color: #0f0;
+        }
+
+        .error {
+            color: red;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h2>OBS Chat Overlay</h2>
+
+    <input type="text" id="name" placeholder="Your name">
+    <input type="text" id="message" placeholder="Your message">
+    <button onclick="sendMessage()">Send</button>
+
+    <div class="error" id="error"></div>
+    <div id="latest">No messages yet</div>
+
+    <script>
+    const bannedWords = ["fuck", "nigga", "gay"]; // customize this
+    const latest = document.getElementById("latest");
+    const error = document.getElementById("error");
+
+    function sendMessage() {
+      error.textContent = "";
+      let name = document.getElementById("name").value.trim();
+      let msg = document.getElementById("message").value.trim();
+
+      if (!name || !msg) {
+        error.textContent = "Please enter both name and message!";
+        return;
+      }
+
+      const lowerMsg = msg.toLowerCase();
+      if (bannedWords.some(word => lowerMsg.includes(word))) {
+        error.textContent = "Message contains banned words!";
+        return;
+      }
+
+      const fullMessage = `${name} said ${msg}`;
+      latest.textContent = fullMessage;
+
+      // Speak the message (TTS)
+      const utterance = new SpeechSynthesisUtterance(fullMessage);
+      speechSynthesis.speak(utterance);
+
+      document.getElementById("message").value = "";
+    }
+    </script>
+</body>
+</html>
