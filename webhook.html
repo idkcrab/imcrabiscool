@@ -1,0 +1,273 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Discord Webhook Sender</title>
+  <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet">
+  <style>
+    body { background: linear-gradient(135deg,#0f172a 0%, #071235 100%); color: #e6eef8; }
+    .glass { background: rgba(255,255,255,0.05); backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.08); }
+    .accent { color: #60a5fa; }
+    .toolbar button { min-width: 44px; }
+    .preview-bubble { background: rgba(255,255,255,0.05); border-radius: 12px; padding: 14px; }
+    label { font-size: 0.85rem; font-weight: 500; }
+    input, textarea { transition: border 0.2s, background 0.2s; }
+    input:focus, textarea:focus { border-color: #60a5fa; background: rgba(255,255,255,0.06); }
+    #embedSection { display: none; }
+  </style>
+</head>
+<body class="min-h-screen p-6 font-sans">
+  <div class="max-w-6xl mx-auto space-y-8">
+    <header class="mb-4 flex items-center justify-between">
+      <h1 class="text-3xl font-extrabold accent">Discord Webhook Sender</h1>
+      <div class="text-sm text-gray-300">Craft & send messages with ease</div>
+    </header>
+
+    <main class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <!-- Left: Editor -->
+      <section class="lg:col-span-2 glass p-6 rounded-xl space-y-6">
+        <div>
+          <label class="block mb-2">Webhook URL</label>
+          <input id="webhook" placeholder="https://discord.com/api/webhooks/..." class="w-full p-3 rounded bg-transparent border border-gray-700 focus:ring-2 focus:ring-blue-400 outline-none" />
+        </div>
+
+        <div>
+          <label class="block mb-2">Message</label>
+          <textarea id="message" rows="6" class="w-full p-4 rounded bg-transparent border border-gray-700 focus:ring-2 focus:ring-blue-400 outline-none text-sm" placeholder="Write your message..."></textarea>
+          <div class="mt-3 flex flex-wrap gap-2 toolbar">
+            <button class="px-3 py-1 rounded bg-gray-800 hover:bg-gray-700 text-sm" onclick="wrapSelection('**','**')">Bold</button>
+            <button class="px-3 py-1 rounded bg-gray-800 hover:bg-gray-700 text-sm" onclick="wrapSelection('*','*')">Italic</button>
+            <button class="px-3 py-1 rounded bg-gray-800 hover:bg-gray-700 text-sm" onclick="wrapSelection('__','__')">Underline</button>
+            <button class="px-3 py-1 rounded bg-gray-800 hover:bg-gray-700 text-sm" onclick="wrapSelection('~~','~~')">Strike</button>
+            <button class="px-3 py-1 rounded bg-gray-800 hover:bg-gray-700 text-sm" onclick="wrapSelection('`','`')">Code</button>
+            <button class="px-3 py-1 rounded bg-gray-800 hover:bg-gray-700 text-sm" onclick="toggleAllCaps()">ALL CAPS</button>
+            <button class="px-3 py-1 rounded bg-gray-800 hover:bg-gray-700 text-sm" onclick="wrapSelection('# ','')">Big Text</button>
+            <button class="px-3 py-1 rounded bg-yellow-500 hover:bg-yellow-400 text-black text-sm" onclick="insertMention('@here')">@here</button>
+            <button class="px-3 py-1 rounded bg-yellow-500 hover:bg-yellow-400 text-black text-sm" onclick="insertMention('@everyone')">@everyone</button>
+            <button class="px-3 py-1 rounded bg-green-600 hover:bg-green-500 text-white text-sm" onclick="toggleEmbedSection()">Embed Options</button>
+            <button class="px-3 py-1 rounded bg-purple-600 hover:bg-purple-500 text-white text-sm" onclick="enhanceMessage()">Enhance</button>
+            <button class="px-3 py-1 rounded bg-pink-600 hover:bg-pink-500 text-white text-sm" onclick="fixSpelling()">Fix Spelling</button>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block mb-1">Username override</label>
+            <input id="username" class="w-full p-2 rounded bg-transparent border border-gray-700 text-sm" placeholder="Optional" />
+          </div>
+          <div>
+            <label class="block mb-1">Avatar URL</label>
+            <input id="avatar" class="w-full p-2 rounded bg-transparent border border-gray-700 text-sm" placeholder="Optional" />
+          </div>
+        </div>
+
+        <aside class="glass p-4 rounded-lg">
+          <div class="preview-bubble">
+            <div class="text-xs text-gray-400">Preview</div>
+            <div id="previewMessage" class="mt-2 text-sm whitespace-pre-wrap text-gray-100"></div>
+          </div>
+
+          <div class="mt-4 space-y-2">
+            <button id="sendBtn" class="w-full py-3 rounded bg-blue-600 hover:bg-blue-500 text-white font-semibold">Send to Webhook</button>
+            <button id="previewBtn" class="w-full py-2 rounded bg-gray-800 hover:bg-gray-700 text-sm">Update Preview</button>
+          </div>
+
+          <div id="status" class="mt-3 text-sm"></div>
+        </aside>
+      </section>
+
+      <!-- Sidebar: Embeds / options -->
+      <section id="embedSection" class="glass p-6 rounded-xl space-y-4">
+        <h2 class="text-lg font-bold">Embed Builder</h2>
+        <div>
+          <label>Title</label>
+          <input id="embedTitle" class="w-full p-2 rounded bg-transparent border border-gray-700 text-sm mb-2" placeholder="Embed title" />
+          <label>Description</label>
+          <textarea id="embedDesc" rows="4" class="w-full p-2 rounded bg-transparent border border-gray-700 text-sm mb-2" placeholder="Embed description"></textarea>
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label>Color (hex)</label>
+            <input id="embedColor" class="w-full p-2 rounded bg-transparent border border-gray-700 text-sm" placeholder="#2f3136" />
+          </div>
+          <div>
+            <label>URL</label>
+            <input id="embedUrl" class="w-full p-2 rounded bg-transparent border border-gray-700 text-sm" placeholder="https://..." />
+          </div>
+        </div>
+        <div>
+          <label>Footer text</label>
+          <input id="embedFooter" class="w-full p-2 rounded bg-transparent border border-gray-700 text-sm" placeholder="Footer" />
+        </div>
+
+        <div class="flex items-center gap-2">
+          <input type="checkbox" id="useEmbed" class="rounded bg-gray-700" />
+          <label for="useEmbed">Send as an embed</label>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <input type="checkbox" id="tts" class="rounded bg-gray-700" />
+          <label for="tts">Enable TTS</label>
+        </div>
+
+        <div class="text-sm text-gray-400 pt-2 border-t border-gray-700">Keep your webhook secret. Anyone with it can post to your channel.</div>
+      </section>
+    </main>
+
+    <footer class="mt-6 text-center text-gray-400 text-sm">Made for quick testing • Use responsibly</footer>
+  </div>
+
+<script>
+  function wrapSelection(before, after) {
+    const ta = document.getElementById('message');
+    const start = ta.selectionStart;
+    const end = ta.selectionEnd;
+    const sel = ta.value.substring(start, end) || 'text';
+    const newText = ta.value.substring(0, start) + before + sel + after + ta.value.substring(end);
+    ta.value = newText;
+    ta.focus();
+    const pos = start + before.length + sel.length + after.length;
+    ta.setSelectionRange(pos, pos);
+    updatePreview();
+  }
+
+  function insertMention(text) {
+    const ta = document.getElementById('message');
+    const pos = ta.selectionEnd || ta.value.length;
+    ta.value = ta.value.slice(0,pos) + text + ta.value.slice(pos);
+    updatePreview();
+  }
+
+  function toggleAllCaps() {
+    const ta = document.getElementById('message');
+    const selected = ta.value.substring(ta.selectionStart, ta.selectionEnd);
+    if (!selected) { ta.value = ta.value.toUpperCase(); } else {
+      const upper = selected.toUpperCase();
+      ta.value = ta.value.substring(0, ta.selectionStart) + upper + ta.value.substring(ta.selectionEnd);
+    }
+    updatePreview();
+  }
+
+  function toggleEmbedSection() {
+    const section = document.getElementById('embedSection');
+    section.style.display = section.style.display === 'none' ? 'block' : 'none';
+  }
+
+  function markdownToHtml(text) {
+    // Simple preview formatting: bold, italic, underline, strike, code, big (#)
+    let html = text.replace(/\*\*(.*?)\*\*/g,'<b>$1</b>');
+    html = html.replace(/\*(.*?)\*/g,'<i>$1</i>');
+    html = html.replace(/__(.*?)__/g,'<u>$1</u>');
+    html = html.replace(/~~(.*?)~~/g,'<s>$1</s>');
+    html = html.replace(/`(.*?)`/g,'<code>$1</code>');
+    html = html.replace(/^# (.*)$/gm,'<span style="font-size:1.5em; font-weight:bold;">$1</span>');
+    return html;
+  }
+
+  function updatePreview() {
+    const message = document.getElementById('message').value || '(empty message)';
+    const useEmbed = document.getElementById('useEmbed').checked;
+    const previewDiv = document.getElementById('previewMessage');
+    if (!useEmbed) {
+      previewDiv.innerHTML = markdownToHtml(message);
+    } else {
+      const title = document.getElementById('embedTitle').value;
+      const desc = document.getElementById('embedDesc').value;
+      const footer = document.getElementById('embedFooter').value;
+      let preview = '';
+      if (title) preview += '<b>' + title + '</b><br><br>';
+      if (desc) preview += desc + '<br><br>';
+      if (message) preview += '— ' + markdownToHtml(message) + '<br><br>';
+      if (footer) preview += '<i>' + footer + '</i>';
+      previewDiv.innerHTML = preview || '(empty embed)';
+    }
+  }
+
+  document.getElementById('previewBtn').addEventListener('click', updatePreview);
+  document.getElementById('message').addEventListener('input', updatePreview);
+  document.getElementById('embedTitle').addEventListener('input', updatePreview);
+  document.getElementById('embedDesc').addEventListener('input', updatePreview);
+  document.getElementById('useEmbed').addEventListener('change', updatePreview);
+
+  function enhanceMessage() {
+    const ta = document.getElementById('message');
+    const sentences = ta.value.split(/([.!?]\s*)/).map(s => s.charAt(0).toUpperCase() + s.slice(1));
+    ta.value = sentences.join('');
+    updatePreview();
+  }
+
+  function fixSpelling() {
+    const ta = document.getElementById('message');
+    let text = ta.value;
+    const corrections = { 'teh': 'the', 'recieve': 'receive', 'adress': 'address', 'definately': 'definitely', 'wich': 'which', 'becuase': 'because' };
+    for (const typo in corrections) {
+      const regex = new RegExp('\\b' + typo + '\\b', 'gi');
+      text = text.replace(regex, corrections[typo]);
+    }
+    ta.value = text;
+    updatePreview();
+  }
+
+  async function sendPayload() {
+    const webhook = document.getElementById('webhook').value.trim();
+    const status = document.getElementById('status');
+    status.textContent = '';
+    if (!webhook) { status.textContent = 'Please provide a webhook URL.'; return; }
+
+    const msg = document.getElementById('message').value;
+    const tts = document.getElementById('tts').checked;
+    const username = document.getElementById('username').value.trim() || undefined;
+    const avatar_url = document.getElementById('avatar').value.trim() || undefined;
+    const useEmbed = document.getElementById('useEmbed').checked;
+
+    let body = {};
+    if (username) body.username = username;
+    if (avatar_url) body.avatar_url = avatar_url;
+    if (tts) body.tts = true;
+
+    if (!useEmbed) {
+      body.content = msg || '';
+    } else {
+      const embed = {};
+      const title = document.getElementById('embedTitle').value.trim();
+      const desc = document.getElementById('embedDesc').value.trim();
+      const colorInput = document.getElementById('embedColor').value.trim();
+      const url = document.getElementById('embedUrl').value.trim();
+      const footer = document.getElementById('embedFooter').value.trim();
+
+      if (title) embed.title = title;
+      if (desc) embed.description = desc;
+      if (url) embed.url = url;
+      if (footer) embed.footer = { text: footer };
+      if (colorInput) {
+        try { embed.color = parseInt(colorInput.replace('#',''), 16); } catch(e) {}
+      }
+      if (msg) embed.description = (embed.description ? embed.description + '\n\n' + msg : msg);
+      body.embeds = [embed];
+    }
+
+    document.getElementById('sendBtn').disabled = true;
+    document.getElementById('sendBtn').textContent = 'Sending...';
+
+    try {
+      const res = await fetch(webhook, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+      if (res.ok) {
+        status.innerHTML = '<span class="text-green-400">Message sent successfully.</span>';
+      } else {
+        const txt = await res.text();
+        status.innerHTML = '<span class="text-yellow-300">Failed: ' + res.status + ' — ' + txt + '</span>';
+      }
+    } catch(err) {
+      status.innerHTML = '<span class="text-red-400">Error: ' + err.message + '</span>';
+    } finally {
+      document.getElementById('sendBtn').disabled = false;
+      document.getElementById('sendBtn').textContent = 'Send to Webhook';
+    }
+  }
+
+  document.getElementById('sendBtn').addEventListener('click', sendPayload);
+  updatePreview();
+</script>
+</body>
+</html>
