@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Verification Page</title>
+  <style>
+    body {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background: #0d1117;
+      color: #e6edf3;
+      font-family: Arial, sans-serif;
+    }
+    .card {
+      background: #161b22;
+      padding: 2rem;
+      border-radius: 16px;
+      text-align: center;
+      box-shadow: 0px 4px 15px rgba(0,0,0,0.6);
+      max-width: 400px;
+    }
+    h1 {
+      font-size: 1.8rem;
+      margin-bottom: 1rem;
+    }
+    #ip {
+      font-size: 1.3rem;
+      color: #58a6ff;
+      margin: 1rem 0;
+    }
+    .verified {
+      font-size: 1.2rem;
+      color: #3fb950;
+      margin-top: 1rem;
+    }
+    .warning {
+      margin-top: 2rem;
+      font-size: 0.9rem;
+      color: #f85149;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Verification</h1>
+    <p>Your IP address:</p>
+    <p id="ip">Loading...</p>
+    <p class="verified">✅ You are verified!</p>
+    <p class="warning">⚠️ This page only displays your IP, nothing is logged.</p>
+  </div>
+
+  <script>
+    fetch("https://api.ipify.org?format=json")
+      .then(res => res.json())
+      .then(data => {
+        document.getElementById("ip").textContent = data.ip;
+      })
+      .catch(() => {
+        document.getElementById("ip").textContent = "Could not fetch IP";
+      });
+  </script>
+</body>
+</html>
