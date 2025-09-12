@@ -1,201 +1,107 @@
 ﻿<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@imcrab</title>
-
-    <!-- Favicon -->
-    <link rel="icon" type="image/png" href="assets/gay.png">
-
-    <!-- Open Graph / Discord Link Preview -->
-    <meta property="og:title" content="@imcrab">
-    <meta property="og:description" content="i make videos">
-    <meta property="og:image" content="https://imgur.com/a/3cZBuuW">
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://imcrab.online">
-
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Embed Any Site (Test)</title>
     <style>
-        :root {
-            --bg: #0a0a0a;
-            --card-bg: #151515;
-            --accent: #ff0000;
-            --text: #ffffff;
-            --muted: #aaa;
-        }
-
-        * {
+        body, html {
+            height: 100%;
             margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Inter', sans-serif;
+            font-family: system-ui,Arial;
+            display: flex;
+            flex-direction: column;
         }
 
-        body {
-            background: var(--bg);
-            color: var(--text);
-        }
-
-        .hero {
-            text-align: center;
-            padding: 120px 20px;
-        }
-
-            .hero h1 {
-                font-size: 3rem;
-                color: #ffffff;
-                margin-bottom: 20px;
-            }
-
-            .hero p {
-                color: var(--muted);
-                font-size: 1.2rem;
-                margin-bottom: 40px;
-            }
-
-        .btn {
-            display: inline-flex;
+        #controls {
+            padding: 10px;
+            background: #f3f3f3;
+            display: flex;
+            gap: 8px;
             align-items: center;
-            gap: 10px;
-            margin: 10px;
-            padding: 15px 30px;
-            border-radius: 30px;
-            font-weight: 600;
-            text-decoration: none;
-            transition: .3s;
         }
 
-        .btn-primary {
-            background: var(--accent);
-            color: #fff;
+        input[type=text] {
+            flex: 1;
+            padding: 8px;
+            font-size: 14px;
         }
 
-            .btn-primary:hover {
-                background: #c00000;
-            }
-
-        .btn-secondary {
-            border: 1px solid #333;
-            color: #fff;
+        button {
+            padding: 8px 12px;
+            cursor: pointer;
         }
 
-            .btn-secondary:hover {
-                background: #111;
-            }
-
-        .section-title {
-            font-size: 2rem;
-            margin: 60px 0 30px;
-            text-align: center;
+        #status {
+            font-size: 13px;
+            color: #444;
+            margin-left: 8px;
         }
 
-        .video-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit,minmax(300px,1fr));
-            gap: 25px;
-            padding: 0 20px 60px;
-        }
-
-        .video-card {
-            background: var(--card-bg);
-            border-radius: 12px;
-            overflow: hidden;
-            transition: .3s;
-            border: 1px solid #222;
-            text-decoration: none;
-            color: #ffffff;
-        }
-
-            .video-card:hover {
-                transform: translateY(-5px);
-                box-shadow: 0 8px 25px rgba(0,0,0,.4);
-            }
-
-        .video-thumb img {
+        iframe {
+            flex: 1;
             width: 100%;
-            height: 200px;
-            object-fit: cover;
-        }
-
-        .video-info {
-            padding: 15px;
-        }
-
-            .video-info h3 {
-                font-size: 1rem;
-                margin-bottom: 8px;
-                color: #ffffff;
-            }
-
-            .video-info p {
-                font-size: .9rem;
-                color: #ffffff;
-            }
-
-        footer {
-            text-align: center;
-            padding: 30px;
-            border-top: 1px solid #222;
-            color: var(--muted);
+            border: none;
         }
     </style>
 </head>
 <body>
-    <section class="hero">
-        <h1>crab is crab 👍</h1>
-        <p>i make videos</p>
-        <div>
-            <a href="https://www.youtube.com/channel/UCvioLqKnp-cychVIYHgOG3Q?sub_confirmation=1" class="btn btn-primary"><i class="fab fa-youtube"></i> Subscribe</a>
-            <a href="https://www.tiktok.com/@imcrab.bread" class="btn btn-secondary"><i class="fab fa-tiktok"></i> Follow</a>
-        </div>
-    </section>
+    <div id="controls">
+        <input id="urlInput" type="text" placeholder="Enter full URL, e.g. https://example.com" />
+        <button id="goBtn">Go</button>
+        <button id="testBtn">Test example.com</button>
+        <button id="openBtn">Open in new tab</button>
+        <span id="status"></span>
+    </div>
 
-    <section id="videos">
-        <h2 class="section-title">Latest Videos</h2>
-        <div class="video-grid" id="video-grid">
-            <!-- Videos load here -->
-        </div>
-    </section>
-
-    <footer>
-        <p>hey you should subscribe</p>
-    </footer>
+    <iframe id="viewer" src=""></iframe>
 
     <script>
-        const API_KEY = "AIzaSyDtfhqzZU3Ob_Q1C1MaDJhoQTHo2Nl31Xg";
-        const CHANNEL_ID = "UCvioLqKnp-cychVIYHgOG3Q";
-        const MAX_RESULTS = 2;
+        const input = document.getElementById('urlInput');
+        const iframe = document.getElementById('viewer');
+        const status = document.getElementById('status');
+        const openBtn = document.getElementById('openBtn');
 
-        async function loadVideos() {
-            const channelRes = await fetch(`https://www.googleapis.com/youtube/v3/channels?part=contentDetails&id=${CHANNEL_ID}&key=${API_KEY}`);
-            const channelData = await channelRes.json();
-            const uploadsPlaylistId = channelData.items[0].contentDetails.relatedPlaylists.uploads;
-
-            const res = await fetch(`https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=${MAX_RESULTS}&playlistId=${uploadsPlaylistId}&key=${API_KEY}`);
-            const data = await res.json();
-
-            const grid = document.getElementById("video-grid");
-            grid.innerHTML = "";
-            data.items.forEach(item => {
-                const vid = item.snippet.resourceId.videoId;
-                const title = item.snippet.title;
-                const thumb = item.snippet.thumbnails.high.url;
-                const desc = item.snippet.description.substring(0, 100) + "...";
-                grid.innerHTML += `
-              <a class="video-card" href="https://www.youtube.com/watch?v=${vid}" target="_blank">
-                <div class="video-thumb"><img src="${thumb}" alt="${title}"></div>
-                <div class="video-info">
-                  <h3>${title}</h3>
-                  <p>${desc}</p>
-                </div>
-              </a>
-            `;
-            });
+        function normalize(url) {
+            if (!url) return '';
+            if (!/^https?:\/\//i.test(url)) url = 'https://' + url;
+            return url;
         }
-        loadVideos();
+
+        function setStatus(text) {
+            status.textContent = text;
+        }
+
+        function load(url) {
+            url = normalize(url);
+            if (!url) { setStatus('Enter a URL.'); return; }
+            setStatus('Loading…');
+            iframe.src = url;
+
+            // Heuristic fallback: after 1.5s show helpful note if you likely see "refused to connect"
+            clearTimeout(iframe._timeout);
+            iframe._timeout = setTimeout(() => {
+                setStatus('If you see "refused to connect" in the frame, that site blocks embedding. Try "Test example.com" or click "Open in new tab".');
+            }, 1500);
+        }
+
+        document.getElementById('goBtn').addEventListener('click', () => load(input.value));
+        document.getElementById('testBtn').addEventListener('click', () => {
+            input.value = 'https://youtube.com';
+            load(input.value);
+        });
+
+        openBtn.addEventListener('click', () => {
+            const url = normalize(input.value);
+            if (!url) { setStatus('Enter a URL first.'); return; }
+            window.open(url, '_blank');
+        });
+
+        // When iframe loads, update status (note: we cannot reliably inspect cross-origin content)
+        iframe.addEventListener('load', () => {
+            clearTimeout(iframe._timeout);
+            setStatus('Frame loaded (if content is blank or shows a browser error, the site likely blocks embedding).');
+        });
     </script>
 </body>
 </html>
