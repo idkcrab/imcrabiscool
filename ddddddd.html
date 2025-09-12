@@ -1,0 +1,107 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Embed Any Site (Test)</title>
+    <style>
+        body, html {
+            height: 100%;
+            margin: 0;
+            font-family: system-ui,Arial;
+            display: flex;
+            flex-direction: column;
+        }
+
+        #controls {
+            padding: 10px;
+            background: #f3f3f3;
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        input[type=text] {
+            flex: 1;
+            padding: 8px;
+            font-size: 14px;
+        }
+
+        button {
+            padding: 8px 12px;
+            cursor: pointer;
+        }
+
+        #status {
+            font-size: 13px;
+            color: #444;
+            margin-left: 8px;
+        }
+
+        iframe {
+            flex: 1;
+            width: 100%;
+            border: none;
+        }
+    </style>
+</head>
+<body>
+    <div id="controls">
+        <input id="urlInput" type="text" placeholder="Enter full URL, e.g. https://example.com" />
+        <button id="goBtn">Go</button>
+        <button id="testBtn">Test example.com</button>
+        <button id="openBtn">Open in new tab</button>
+        <span id="status"></span>
+    </div>
+
+    <iframe id="viewer" src=""></iframe>
+
+    <script>
+        const input = document.getElementById('urlInput');
+        const iframe = document.getElementById('viewer');
+        const status = document.getElementById('status');
+        const openBtn = document.getElementById('openBtn');
+
+        function normalize(url) {
+            if (!url) return '';
+            if (!/^https?:\/\//i.test(url)) url = 'https://' + url;
+            return url;
+        }
+
+        function setStatus(text) {
+            status.textContent = text;
+        }
+
+        function load(url) {
+            url = normalize(url);
+            if (!url) { setStatus('Enter a URL.'); return; }
+            setStatus('Loading…');
+            iframe.src = url;
+
+            // Heuristic fallback: after 1.5s show helpful note if you likely see "refused to connect"
+            clearTimeout(iframe._timeout);
+            iframe._timeout = setTimeout(() => {
+                setStatus('If you see "refused to connect" in the frame, that site blocks embedding. Try "Test example.com" or click "Open in new tab".');
+            }, 1500);
+        }
+
+        document.getElementById('goBtn').addEventListener('click', () => load(input.value));
+        document.getElementById('testBtn').addEventListener('click', () => {
+            input.value = 'https://youtube.com';
+            load(input.value);
+        });
+
+        openBtn.addEventListener('click', () => {
+            const url = normalize(input.value);
+            if (!url) { setStatus('Enter a URL first.'); return; }
+            window.open(url, '_blank');
+        });
+
+        // When iframe loads, update status (note: we cannot reliably inspect cross-origin content)
+        iframe.addEventListener('load', () => {
+            clearTimeout(iframe._timeout);
+            setStatus('Frame loaded (if content is blank or shows a browser error, the site likely blocks embedding).');
+        });
+    </script>
+</body>
+</html>
